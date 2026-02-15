@@ -339,14 +339,16 @@ def get_trip_durations(
     # Получаем рейсы
     query = f"""
         WITH valid_services AS (
-            SELECT service_id FROM calendar WHERE {day_column} = 1
+            SELECT CAST(service_id AS VARCHAR) as service_id
+            FROM calendar 
+            WHERE {day_column} = 1
         ),
         route_trips AS (
             SELECT trip_id
             FROM trips
-            WHERE route_id = ?
-              AND direction_id = ?
-              AND service_id IN (SELECT service_id FROM valid_services)
+            WHERE CAST(route_id AS VARCHAR) = ?
+              AND CAST(direction_id AS VARCHAR) = ?
+              AND CAST(service_id AS VARCHAR) IN (SELECT service_id FROM valid_services)
         )
         SELECT 
             st.trip_id,
