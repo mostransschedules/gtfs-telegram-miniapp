@@ -119,24 +119,56 @@ function StatsTabs({ route, stop, direction, dayType }) {
     }
   }
 
+  // Получить время или диапазон времени для значения интервала
+  const getTimeRangeForInterval = (intervals, value, isMin = true) => {
+    const array = isMin ? intervals.min_intervals : intervals.max_intervals
+    const matchingHours = []
+    
+    array.forEach((val, idx) => {
+      if (val === value && val > 0) {
+        matchingHours.push(intervals.hours[idx])
+      }
+    })
+    
+    if (matchingHours.length === 0) return ''
+    if (matchingHours.length === 1) return ` в ${matchingHours[0]}:00`
+    
+    const first = Math.min(...matchingHours)
+    const last = Math.max(...matchingHours)
+    return ` с ${first}:00 до ${last}:00`
+  }
+
+  // Получить время или диапазон времени для времени рейса
+  const getTimeRangeForDuration = (durations, value) => {
+    if (!durations.trips) return ''
+    
+    const matchingTrips = durations.trips.filter(t => t.duration === value)
+    
+    if (matchingTrips.length === 0) return ''
+    if (matchingTrips.length === 1) return ` в ${matchingTrips[0].first_time}`
+    
+    const times = matchingTrips.map(t => t.first_time).sort()
+    return ` с ${times[0]} до ${times[times.length - 1]}`
+  }
+
   const chartOptions = {
     responsive: true,
     maintainAspectRatio: false,
     plugins: {
       legend: {
         labels: {
-          color: 'var(--tg-text)'
+          color: '#ffffff'  // Белый текст для тёмной темы
         }
       }
     },
     scales: {
       x: {
-        ticks: { color: 'var(--tg-text)' },
-        grid: { color: 'rgba(128, 128, 128, 0.1)' }
+        ticks: { color: '#ffffff' },  // Белый текст
+        grid: { color: 'rgba(255, 255, 255, 0.1)' }
       },
       y: {
-        ticks: { color: 'var(--tg-text)' },
-        grid: { color: 'rgba(128, 128, 128, 0.1)' }
+        ticks: { color: '#ffffff' },  // Белый текст
+        grid: { color: 'rgba(255, 255, 255, 0.1)' }
       }
     }
   }
@@ -206,11 +238,21 @@ function StatsTabs({ route, stop, direction, dayType }) {
                       </div>
                       <div className="stat-item">
                         <span className="stat-label">Минимум:</span>
-                        <span className="stat-value">{durations.min} мин</span>
+                        <span className="stat-value">
+                          {durations.min} мин
+                          <span className="stat-time">
+                            {getTimeRangeForDuration(durations, durations.min)}
+                          </span>
+                        </span>
                       </div>
                       <div className="stat-item">
                         <span className="stat-label">Максимум:</span>
-                        <span className="stat-value">{durations.max} мин</span>
+                        <span className="stat-value">
+                          {durations.max} мин
+                          <span className="stat-time">
+                            {getTimeRangeForDuration(durations, durations.max)}
+                          </span>
+                        </span>
                       </div>
                     </div>
                     <div className="chart-container">
@@ -249,12 +291,18 @@ function StatsTabs({ route, stop, direction, dayType }) {
                       <span className="stat-label">Минимальный:</span>
                       <span className="stat-value">
                         {Math.min(...intervals.min_intervals.filter(i => i > 0))} мин
+                        <span className="stat-time">
+                          {getTimeRangeForInterval(intervals, Math.min(...intervals.min_intervals.filter(i => i > 0)), true)}
+                        </span>
                       </span>
                     </div>
                     <div className="stat-item">
                       <span className="stat-label">Максимальный:</span>
                       <span className="stat-value">
                         {Math.max(...intervals.max_intervals)} мин
+                        <span className="stat-time">
+                          {getTimeRangeForInterval(intervals, Math.max(...intervals.max_intervals), false)}
+                        </span>
                       </span>
                     </div>
                   </div>
@@ -269,11 +317,21 @@ function StatsTabs({ route, stop, direction, dayType }) {
                     </div>
                     <div className="stat-item">
                       <span className="stat-label">Быстрейший:</span>
-                      <span className="stat-value">{durations.min} мин</span>
+                      <span className="stat-value">
+                        {durations.min} мин
+                        <span className="stat-time">
+                          {getTimeRangeForDuration(durations, durations.min)}
+                        </span>
+                      </span>
                     </div>
                     <div className="stat-item">
                       <span className="stat-label">Самый долгий:</span>
-                      <span className="stat-value">{durations.max} мин</span>
+                      <span className="stat-value">
+                        {durations.max} мин
+                        <span className="stat-time">
+                          {getTimeRangeForDuration(durations, durations.max)}
+                        </span>
+                      </span>
                     </div>
                     <div className="stat-item">
                       <span className="stat-label">Всего рейсов:</span>
