@@ -100,6 +100,14 @@
   font-weight: 700;
 }
 
+.stat-time {
+  color: var(--tg-hint);
+  font-size: 13px;
+  font-weight: 400;
+  display: block;
+  margin-top: 2px;
+}
+
 /* Адаптивность */
 @media (max-width: 480px) {
   .tabs-header button {
