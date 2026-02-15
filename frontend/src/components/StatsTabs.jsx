@@ -89,8 +89,8 @@ function StatsTabs({ route, stop, direction, dayType }) {
         {
           label: 'Максимальный интервал',
           data: intervals.max_intervals,
-          borderColor: 'rgb(255, 99, 132)',
-          backgroundColor: 'rgba(255, 99, 132, 0.2)',
+          borderColor: 'rgb(255, 140, 0)',  // Приглушенный оранжевый
+          backgroundColor: 'rgba(255, 140, 0, 0.2)',
           fill: true,
           tension: 0.4
         }
@@ -157,18 +157,30 @@ function StatsTabs({ route, stop, direction, dayType }) {
     plugins: {
       legend: {
         labels: {
-          color: '#ffffff'  // Белый текст для тёмной темы
+          color: window.Telegram?.WebApp?.themeParams?.text_color || '#000000'
         }
       }
     },
     scales: {
       x: {
-        ticks: { color: '#ffffff' },  // Белый текст
-        grid: { color: 'rgba(255, 255, 255, 0.1)' }
+        ticks: { 
+          color: window.Telegram?.WebApp?.themeParams?.text_color || '#000000'
+        },
+        grid: { 
+          color: window.Telegram?.WebApp?.colorScheme === 'dark' 
+            ? 'rgba(255, 255, 255, 0.1)' 
+            : 'rgba(0, 0, 0, 0.1)' 
+        }
       },
       y: {
-        ticks: { color: '#ffffff' },  // Белый текст
-        grid: { color: 'rgba(255, 255, 255, 0.1)' }
+        ticks: { 
+          color: window.Telegram?.WebApp?.themeParams?.text_color || '#000000'
+        },
+        grid: { 
+          color: window.Telegram?.WebApp?.colorScheme === 'dark' 
+            ? 'rgba(255, 255, 255, 0.1)' 
+            : 'rgba(0, 0, 0, 0.1)' 
+        }
       }
     }
   }
@@ -229,32 +241,31 @@ function StatsTabs({ route, stop, direction, dayType }) {
             {activeTab === 'durations' && (
               <div className="tab-panel">
                 <h3>Время выполнения рейсов</h3>
-                {durations && getDurationsChartData() ? (
+                {durations && durations.trips && durations.trips.length > 0 ? (
                   <>
-                    <div className="stats-summary">
-                      <div className="stat-item">
-                        <span className="stat-label">Среднее:</span>
-                        <span className="stat-value">{durations.average.toFixed(1)} мин</span>
+                    {/* Карточки с метриками */}
+                    <div className="duration-cards">
+                      <div className="duration-card">
+                        <div className="duration-card-label">Среднее время</div>
+                        <div className="duration-card-value">{durations.average.toFixed(1)} мин</div>
                       </div>
-                      <div className="stat-item">
-                        <span className="stat-label">Минимум:</span>
-                        <span className="stat-value">
-                          {durations.min} мин
-                          <span className="stat-time">
-                            {getTimeRangeForDuration(durations, durations.min)}
-                          </span>
-                        </span>
+                      <div className="duration-card">
+                        <div className="duration-card-label">Минимальное время</div>
+                        <div className="duration-card-value">{durations.min} мин</div>
+                        <div className="duration-card-time">
+                          {getTimeRangeForDuration(durations, durations.min)}
+                        </div>
                       </div>
-                      <div className="stat-item">
-                        <span className="stat-label">Максимум:</span>
-                        <span className="stat-value">
-                          {durations.max} мин
-                          <span className="stat-time">
-                            {getTimeRangeForDuration(durations, durations.max)}
-                          </span>
-                        </span>
+                      <div className="duration-card">
+                        <div className="duration-card-label">Максимальное время</div>
+                        <div className="duration-card-value">{durations.max} мин</div>
+                        <div className="duration-card-time">
+                          {getTimeRangeForDuration(durations, durations.max)}
+                        </div>
                       </div>
                     </div>
+
+                    {/* График */}
                     <div className="chart-container">
                       <Bar 
                         data={getDurationsChartData()} 
