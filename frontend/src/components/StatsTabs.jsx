@@ -118,64 +118,85 @@ function StatsTabs({ route, stop, direction, dayType, schedule }) {
     return ranges
   }
 
-  // Получить все диапазоны для интервалов
-  const getAllTimeRangesForInterval = (intervals, value, isMin = true) => {
-    if (!intervals) return []
+  // Получить все диапазоны для интервалов (используя реальные времена из расписания)
+  const getAllTimeRangesForInterval = (intervals, targetValue, isMin = true) => {
+    if (!intervals || !schedule || schedule.length === 0) return []
     
-    const array = isMin ? intervals.min_intervals : intervals.max_intervals
-    const matchingHours = []
+    // Вычисляем интервалы между всеми временами в расписании
+    const times = schedule.map(t => t.substring(0, 5))
+    const intervalsData = []
     
-    array.forEach((val, idx) => {
-      if (val === value && val > 0) {
-        matchingHours.push(intervals.hours[idx])
+    for (let i = 1; i < times.length; i++) {
+      const [h1, m1] = times[i-1].split(':').map(Number)
+      const [h2, m2] = times[i].split(':').map(Number)
+      
+      // Вычисляем интервал в минутах
+      let interval = (h2 * 60 + m2) - (h1 * 60 + m1)
+      if (interval < 0) interval += 24 * 60 // Переход через полночь
+      
+      if (interval > 0 && interval < 180) { // Игнорируем слишком большие
+        intervalsData.push({
+          time: times[i],
+          interval: interval
+        })
       }
-    })
-    
-    if (matchingHours.length === 0) return []
-    
-    // Сортируем хронологически
-    const sortedHours = matchingHours.sort((a, b) => {
-      const ha = a < 4 ? a + 24 : a
-      const hb = b < 4 ? b + 24 : b
-      return ha - hb
-    })
-    
-    if (sortedHours.length === 1) {
-      return [`в ${sortedHours[0]}:00`]
     }
     
-    // Группируем последовательные часы
-    const ranges = []
-    let rangeStart = sortedHours[0]
-    let rangeLast = sortedHours[0]
+    // Находим все времена с нужным интервалом
+    const matchingTimes = intervalsData
+      .filter(item => item.interval === targetValue)
+      .map(item => item.time)
     
-    for (let i = 1; i < sortedHours.length; i++) {
-      const current = sortedHours[i]
-      const prev = rangeLast
+    if (matchingTimes.length === 0) return []
+    
+    // Сортируем хронологически
+    const sortedTimes = matchingTimes.sort((a, b) => {
+      const [ha, ma] = a.split(':').map(Number)
+      const [hb, mb] = b.split(':').map(Number)
+      const ka = ha < 4 ? ha + 24 : ha
+      const kb = hb < 4 ? hb + 24 : hb
+      return (ka * 60 + ma) - (kb * 60 + mb)
+    })
+    
+    // Если одно время
+    if (sortedTimes.length === 1) {
+      return [`в ${sortedTimes[0]}`]
+    }
+    
+    // Группируем последовательные времена в диапазоны
+    const ranges = []
+    let rangeStart = sortedTimes[0]
+    let rangeLast = sortedTimes[0]
+    
+    for (let i = 1; i < sortedTimes.length; i++) {
+      const [h1, m1] = rangeLast.split(':').map(Number)
+      const [h2, m2] = sortedTimes[i].split(':').map(Number)
       
-      // Проверяем последовательность
-      const isConsecutive = (current === prev + 1) || 
-                           (prev === 23 && current === 0)
+      // Вычисляем разницу в минутах
+      const t1 = (h1 < 4 ? h1 + 24 : h1) * 60 + m1
+      const t2 = (h2 < 4 ? h2 + 24 : h2) * 60 + m2
+      const diff = t2 - t1
       
-      if (isConsecutive) {
-        rangeLast = current
+      // Если разница примерно равна интервалу (±2 минуты) - продолжаем диапазон
+      if (Math.abs(diff - targetValue) <= 2) {
+        rangeLast = sortedTimes[i]
       } else {
         // Сохраняем диапазон
         if (rangeStart === rangeLast) {
-          ranges.push(`в ${rangeStart}:00`)
+          ranges.push(`в ${rangeStart}`)
         } else {
-          ranges.push(`с ${rangeStart}:00 до ${rangeLast}:59`)
+          ranges.push(`с ${rangeStart} до ${rangeLast}`)
         }
-        rangeStart = current
-        rangeLast = current
+        rangeStart = sortedTimes[i]
+        rangeLast = sortedTimes[i]
       }
     }
     
     // Последний диапазон
     if (rangeStart === rangeLast) {
-      ranges.push(`в ${rangeStart}:00`)
+      ranges.push(`в ${rangeStart}`)
     } else {
-      ranges.push(`с ${rangeStart}:00 до ${rangeLast}:59`)
+      ranges.push(`с ${rangeStart} до ${rangeLast}`)
     }
     
     return ranges
