@@ -31,7 +31,7 @@ ChartJS.register(
   Filler
 )
 
-function StatsTabs({ route, stop, direction, dayType }) {
+function StatsTabs({ route, stop, direction, dayType, schedule }) {
   const [activeTab, setActiveTab] = useState('intervals')
   const [intervals, setIntervals] = useState(null)
   const [durations, setDurations] = useState(null)
@@ -150,15 +150,33 @@ function StatsTabs({ route, stop, direction, dayType }) {
     let rangeLast = sortedHours[0]
     
     for (let i = 1; i < sortedHours.length; i++) {
-      if (sortedHours[i] - rangeLast === 1 || (rangeLast === 23 && sortedHours[i] === 0)) {
-        rangeLast = sortedHours[i]
+      const current = sortedHours[i]
+      const prev = rangeLast
+      
+      // Проверяем последовательность
+      const isConsecutive = (current === prev + 1) || 
+                           (prev === 23 && current === 0)
+      
+      if (isConsecutive) {
+        rangeLast = current
       } else {
-        ranges.push(`с ${rangeStart}:00 до ${rangeLast}:00`)
-        rangeStart = sortedHours[i]
-        rangeLast = sortedHours[i]
+        // Сохраняем диапазон
+        if (rangeStart === rangeLast) {
+          ranges.push(`в ${rangeStart}:00`)
+        } else {
+          ranges.push(`с ${rangeStart}:00 до ${rangeLast}:59`)
+        }
+        rangeStart = current
+        rangeLast = current
       }
     }
-    ranges.push(`с ${rangeStart}:00 до ${rangeLast}:00`)
+    
+    // Последний диапазон
+    if (rangeStart === rangeLast) {
+      ranges.push(`в ${rangeStart}:00`)
+    } else {
+      ranges.push(`с ${rangeStart}:00 до ${rangeLast}:59`)
+    }
     
     return ranges
   }
