@@ -1,0 +1,161 @@
+/* =============================================================================
+   APP STYLES
+   ============================================================================= */
+
+.app {
+  min-height: 100vh;
+  padding-bottom: 20px;
+}
+
+/* Header */
+.header {
+  text-align: center;
+  padding: 20px 0;
+  margin-bottom: 20px;
+}
+
+.header h1 {
+  font-size: 24px;
+  margin-bottom: 4px;
+}
+
+.subtitle {
+  color: var(--tg-hint);
+  font-size: 14px;
+}
+
+/* Кнопки выбора */
+.day-type-selector,
+.direction-selector {
+  display: flex;
+  gap: 8px;
+}
+
+.day-type-selector button,
+.direction-selector button {
+  flex: 1;
+  padding: 12px;
+  border-radius: 8px;
+  background: var(--tg-secondary-bg);
+  color: var(--tg-text);
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.day-type-selector button.active,
+.direction-selector button.active {
+  background: var(--tg-button);
+  color: var(--tg-button-text);
+}
+
+/* Кнопка назад */
+.back-button {
+  padding: 10px 16px;
+  border-radius: 8px;
+  background: var(--tg-secondary-bg);
+  color: var(--tg-text);
+  font-size: 14px;
+}
+
+/* Сетка маршрутов */
+.route-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.route-card {
+  background: var(--tg-secondary-bg);
+  border-radius: 12px;
+  padding: 16px;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.route-card:active {
+  transform: scale(0.97);
+}
+
+.route-number {
+  font-size: 24px;
+  font-weight: bold;
+  color: var(--tg-button);
+  margin-bottom: 8px;
+}
+
+.route-name {
+  font-size: 12px;
+  color: var(--tg-hint);
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Карточка остановки */
+.stop-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--tg-secondary-bg);
+  border-radius: 12px;
+  padding: 12px;
+  margin-bottom: 8px;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.stop-card:active {
+  transform: scale(0.98);
+}
+
+.stop-number {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--tg-button);
+  color: var(--tg-button-text);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+.stop-name {
+  flex: 1;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+/* Расписание */
+.schedule-times {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.time-chip {
+  background: var(--tg-secondary-bg);
+  padding: 12px 8px;
+  border-radius: 8px;
+  text-align: center;
+  font-size: 16px;
+  font-weight: 500;
+  font-family: 'Monaco', 'Courier New', monospace;
+}
+
+/* Адаптивность */
+@media (max-width: 480px) {
+  .route-grid {
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  }
+  
+  .schedule-times {
+    grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+  }
+}
