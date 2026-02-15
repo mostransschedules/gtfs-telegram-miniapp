@@ -7,6 +7,7 @@
 import { useState, useEffect } from 'react'
 import { initMiniApp, initBackButton } from '@telegram-apps/sdk'
 import { getRoutes, getStops, getSchedule } from './utils/api'
+import StatsTabs from './components/StatsTabs'
 import './App.css'
 
 function App() {
@@ -67,6 +68,27 @@ function App() {
     }
   }, [searchQuery, routes])
 
+  // Перезагрузить остановки при смене направления
+  useEffect(() => {
+    if (selectedRoute && !selectedStop) {
+      loadStopsForRoute()
+    }
+  }, [direction])
+
+  const loadStopsForRoute = async () => {
+    if (!selectedRoute) return
+    
+    setLoading(true)
+    try {
+      const data = await getStops(selectedRoute.route_short_name, direction)
+      setStops(data)
+    } catch (err) {
+      setError('Не удалось загрузить остановки')
+    } finally {
+      setLoading(false)
+    }
+  }
+
   const loadRoutes = async () => {
     setLoading(true)
     setError(null)
@@ -97,6 +119,22 @@ function App() {
     } finally {
       setLoading(false)
     }
+  }
+
+  // Получить название маршрута с учётом направления
+  const getRouteDisplayName = (route) => {
+    if (!route || !route.route_long_name) return ''
+    
+    const name = route.route_long_name
+    
+    // Если есть разделитель " - " и выбрано обратное направление
+    if (name.includes(' - ') && direction === 1) {
+      const parts = name.split(' - ')
+      // Разворачиваем: "A - B" → "B - A"
+      return parts.reverse().join(' - ')
+    }
+    
+    return name
   }
 
   // Загрузить расписание при выборе остановки
@@ -224,7 +262,7 @@ function App() {
                       onClick={() => handleRouteSelect(route)}
                     >
                       <div className="route-number">{route.route_short_name}</div>
-                      <div className="route-name">{route.route_long_name}</div>
+                      <div className="route-name">{getRouteDisplayName(route)}</div>
                     </div>
                   ))}
                 </div>
@@ -254,7 +292,7 @@ function App() {
             </button>
             
             <h2>Маршрут {selectedRoute.route_short_name}</h2>
-            <p className="mb-3">{selectedRoute.route_long_name}</p>
+            <p className="mb-3">{getRouteDisplayName(selectedRoute)}</p>
             
             {loading ? (
               <div className="text-center mt-3">
@@ -295,13 +333,23 @@ function App() {
                 <p className="mt-2">Загружаем расписание...</p>
               </div>
             ) : schedule.length > 0 ? (
-              <div className="schedule-times">
-                {schedule.map((time, index) => (
-                  <div key={index} className="time-chip">
-                    {time.substring(0, 5)}
-                  </div>
-                ))}
-              </div>
+              <>
+                <div className="schedule-times">
+                  {schedule.map((time, index) => (
+                    <div key={index} className="time-chip">
+                      {time.substring(0, 5)}
+                    </div>
+                  ))}
+                </div>
+
+                {/* Статистика и графики */}
+                <StatsTabs
+                  route={selectedRoute}
+                  stop={selectedStop}
+                  direction={direction}
+                  dayType={dayType}
+                />
+              </>
             ) : (
               <div className="info">
                 ℹ️ Нет расписания для выбранных параметров
