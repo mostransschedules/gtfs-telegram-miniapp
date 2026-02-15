@@ -55,6 +55,7 @@ function StatsTabs({ route, stop, direction, dayType }) {
         direction,
         dayType
       )
+      console.log('Intervals data:', intervalsData)
       setIntervals(intervalsData)
 
       // Загружаем время рейсов
@@ -63,6 +64,7 @@ function StatsTabs({ route, stop, direction, dayType }) {
         direction,
         dayType
       )
+      console.log('Durations data:', durationsData)
       setDurations(durationsData)
     } catch (err) {
       console.error('Ошибка загрузки статистики:', err)
