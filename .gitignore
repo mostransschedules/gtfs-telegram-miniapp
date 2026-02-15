@@ -1,0 +1,24 @@
+# Python
+__pycache__
+.pyc
+.pyo
+.pyd
+.Python
+venv
+env
+
+# Node.js
+node_modules
+dist
+.DS_Store
+
+# Environment
+.env
+.env.local
+
+# IDE
+.vscode
+.idea
+
+# НЕ игнорируем .duckdb - нам нужно загрузить БД на GitHub!
+# Render скачает её оттуда
