@@ -62,6 +62,39 @@
   margin-top: 16px;
 }
 
+/* Карточки времени рейсов */
+.duration-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.duration-card {
+  background: var(--tg-button);
+  color: var(--tg-button-text);
+  border-radius: 12px;
+  padding: 16px;
+  text-align: center;
+}
+
+.duration-card-label {
+  font-size: 12px;
+  opacity: 0.9;
+  margin-bottom: 8px;
+}
+
+.duration-card-value {
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.duration-card-time {
+  font-size: 11px;
+  opacity: 0.8;
+}
+
 /* Статистика */
 .stats-summary {
   display: flex;
