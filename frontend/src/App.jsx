@@ -16,6 +16,8 @@ function App() {
   
   const [tg] = useState(() => window.Telegram?.WebApp)
   const [routes, setRoutes] = useState([])
+  const [filteredRoutes, setFilteredRoutes] = useState([])
+  const [searchQuery, setSearchQuery] = useState('')
   const [selectedRoute, setSelectedRoute] = useState(null)
   const [stops, setStops] = useState([])
   const [selectedStop, setSelectedStop] = useState(null)
@@ -51,12 +53,27 @@ function App() {
     loadRoutes()
   }, [])
 
+  // Фильтрация маршрутов при изменении поиска
+  useEffect(() => {
+    if (searchQuery.trim() === '') {
+      setFilteredRoutes(routes)
+    } else {
+      const query = searchQuery.toLowerCase()
+      const filtered = routes.filter(route => 
+        route.route_short_name.toLowerCase().includes(query) ||
+        route.route_long_name.toLowerCase().includes(query)
+      )
+      setFilteredRoutes(filtered)
+    }
+  }, [searchQuery, routes])
+
   const loadRoutes = async () => {
     setLoading(true)
     setError(null)
     try {
       const data = await getRoutes()
       setRoutes(data)
+      setFilteredRoutes(data)
     } catch (err) {
       setError('Не удалось загрузить маршруты')
     } finally {
@@ -172,23 +189,58 @@ function App() {
         {!selectedRoute && (
           <div className="routes-list">
             <h2>Выберите маршрут</h2>
+            
+            {/* Поле поиска */}
+            <div className="search-box mb-3">
+              <input
+                type="text"
+                placeholder="🔍 Поиск маршрута..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="search-input"
+              />
+              {searchQuery && (
+                <button 
+                  className="clear-search"
+                  onClick={() => setSearchQuery('')}
+                >
+                  ✕
+                </button>
+              )}
+            </div>
+
             {loading ? (
               <div className="text-center mt-3">
                 <div className="spinner"></div>
                 <p className="mt-2">Загрузка...</p>
               </div>
+            ) : filteredRoutes.length > 0 ? (
+              <>
+                <div className="route-grid">
+                  {filteredRoutes.map(route => (
+                    <div
+                      key={route.route_id}
+                      className="route-card"
+                      onClick={() => handleRouteSelect(route)}
+                    >
+                      <div className="route-number">{route.route_short_name}</div>
+                      <div className="route-name">{route.route_long_name}</div>
+                    </div>
+                  ))}
+                </div>
+                {searchQuery && (
+                  <p className="search-results-text mt-2">
+                    Найдено: {filteredRoutes.length} из {routes.length}
+                  </p>
+                )}
+              </>
+            ) : searchQuery ? (
+              <div className="info mt-3">
+                ℹ️ Ничего не найдено по запросу "{searchQuery}"
+              </div>
             ) : (
-              <div className="route-grid">
-                {routes.map(route => (
-                  <div
-                    key={route.route_id}
-                    className="route-card"
-                    onClick={() => handleRouteSelect(route)}
-                  >
-                    <div className="route-number">{route.route_short_name}</div>
-                    <div className="route-name">{route.route_long_name}</div>
-                  </div>
-                ))}
+              <div className="info mt-3">
+                ℹ️ Нет доступных маршрутов
               </div>
             )}
           </div>
