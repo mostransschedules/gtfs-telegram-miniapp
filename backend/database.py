@@ -90,7 +90,13 @@ def get_routes_list() -> List[Dict]:
             route_long_name,
             route_id
         FROM routes
-        ORDER BY CAST(route_short_name AS INTEGER)
+        ORDER BY 
+            CASE 
+                WHEN route_short_name ~ '^[0-9]+$' 
+                THEN CAST(route_short_name AS INTEGER)
+                ELSE 999999
+            END,
+            route_short_name
     """
     
     df = con.execute(query).df()
