@@ -186,7 +186,40 @@
   line-height: 1.4;
 }
 
-/* Расписание */
+/* Расписание по часам */
+.schedule-by-hour {
+  margin-top: 16px;
+}
+
+.hour-group {
+  margin-bottom: 24px;
+}
+
+.hour-header {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--tg-button);
+  margin-bottom: 12px;
+  padding-left: 4px;
+}
+
+.hour-times {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+  gap: 8px;
+}
+
+.time-chip-small {
+  background: var(--tg-secondary-bg);
+  padding: 10px 6px;
+  border-radius: 8px;
+  text-align: center;
+  font-size: 14px;
+  font-weight: 700;
+  font-family: 'Monaco', 'Courier New', monospace;
+}
+
+/* Старые стили расписания (убираем) */
 .schedule-times {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
@@ -204,6 +237,40 @@
   text-align: center;
   font-size: 16px;
   font-weight: 700;
+  font-family: 'Monaco', 'Courier New', monospace;
+}
+
+/* Расписание по часам */
+.schedule-by-hour {
+  margin-top: 16px;
+}
+
+.hour-group {
+  margin-bottom: 24px;
+}
+
+.hour-header {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--tg-text);
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid var(--tg-hint);
+}
+
+.hour-times {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+  gap: 8px;
+}
+
+.time-chip-small {
+  background: var(--tg-secondary-bg);
+  padding: 10px 6px;
+  border-radius: 8px;
+  text-align: center;
+  font-size: 14px;
+  font-weight: 500;
   font-family: 'Monaco', 'Courier New', monospace;
 }
 
