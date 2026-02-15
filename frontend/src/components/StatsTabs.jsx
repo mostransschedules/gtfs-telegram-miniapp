@@ -81,7 +81,7 @@ function StatsTabs({ route, stop, direction, dayType }) {
     if (matchingTrips.length === 0) return []
     
     // Группируем последовательные рейсы в диапазоны
-    const times = matchingTrips.map(t => t.first_time).sort((a, b) => {
+    const times = matchingTrips.map(t => t.first_time.substring(0, 5)).sort((a, b) => {
       const [ha, ma] = a.split(':').map(Number)
       const [hb, mb] = b.split(':').map(Number)
       const ka = ha < 4 ? ha + 24 : ha
