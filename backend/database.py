@@ -180,72 +180,78 @@ def get_route_schedule(
     Returns:
         List[str]: Отсортированный список времён прибытия
     """
-    con = get_connection()
-    
-    # Получаем route_id
-    route_df = con.execute(
-        "SELECT route_id FROM routes WHERE route_short_name = ?",
-        [route_short_name]
-    ).df()
-    
-    if route_df.empty:
+    try:
+        con = get_connection()
+        
+        # Получаем route_id
+        route_df = con.execute(
+            "SELECT route_id FROM routes WHERE route_short_name = ?",
+            [route_short_name]
+        ).df()
+        
+        if route_df.empty:
+            con.close()
+            return []
+        
+        route_id = str(route_df.iloc[0]['route_id'])
+        direction_id = str(direction)
+        day_column = 'monday' if day_type == 'weekday' else 'sunday'
+        
+        # Получаем расписание
+        query = f"""
+            WITH valid_services AS (
+                SELECT CAST(service_id AS VARCHAR) as service_id
+                FROM calendar 
+                WHERE {day_column} = 1
+            ),
+            route_trips AS (
+                SELECT DISTINCT t.trip_id
+                FROM trips t
+                WHERE CAST(t.route_id AS VARCHAR) = ?
+                  AND CAST(t.direction_id AS VARCHAR) = ?
+                  AND CAST(t.service_id AS VARCHAR) IN (SELECT service_id FROM valid_services)
+            ),
+            stop_ids AS (
+                SELECT CAST(stop_id AS VARCHAR) as stop_id
+                FROM stops
+                WHERE stop_name = ?
+            )
+            SELECT DISTINCT st.arrival_time
+            FROM stop_times st
+            WHERE st.trip_id IN (SELECT trip_id FROM route_trips)
+              AND CAST(st.stop_id AS VARCHAR) IN (SELECT stop_id FROM stop_ids)
+            ORDER BY st.arrival_time
+        """
+        
+        df = con.execute(query, [route_id, direction_id, stop_name]).df()
         con.close()
+        
+        # Нормализуем время и сортируем
+        times = []
+        for time_str in df['arrival_time'].tolist():
+            normalized = normalize_time(time_str)
+            if normalized:
+                times.append({
+                    'time': normalized,
+                    'sort_key': get_sort_key(normalized)
+                })
+        
+        # Сортируем и удаляем дубликаты
+        times_sorted = sorted(times, key=lambda x: x['sort_key'])
+        unique_times = []
+        seen = set()
+        
+        for item in times_sorted:
+            if item['time'] not in seen:
+                unique_times.append(item['time'])
+                seen.add(item['time'])
+        
+        return unique_times
+    except Exception as e:
+        print(f"❌ Ошибка в get_route_schedule: {e}")
+        import traceback
+        traceback.print_exc()
         return []
-    
-    route_id = str(route_df.iloc[0]['route_id'])
-    direction_id = str(direction)
-    day_column = 'monday' if day_type == 'weekday' else 'sunday'
-    
-    # Получаем расписание
-    query = f"""
-        WITH valid_services AS (
-            SELECT service_id 
-            FROM calendar 
-            WHERE {day_column} = 1
-        ),
-        route_trips AS (
-            SELECT DISTINCT t.trip_id
-            FROM trips t
-            WHERE t.route_id = ?
-              AND t.direction_id = ?
-              AND t.service_id IN (SELECT service_id FROM valid_services)
-        ),
-        stop_ids AS (
-            SELECT stop_id
-            FROM stops
-            WHERE stop_name = ?
-        )
-        SELECT DISTINCT st.arrival_time
-        FROM stop_times st
-        WHERE st.trip_id IN (SELECT trip_id FROM route_trips)
-          AND st.stop_id IN (SELECT stop_id FROM stop_ids)
-        ORDER BY st.arrival_time
-    """
-    
-    df = con.execute(query, [route_id, direction_id, stop_name]).df()
-    con.close()
-    
-    # Нормализуем время и сортируем
-    times = []
-    for time_str in df['arrival_time'].tolist():
-        normalized = normalize_time(time_str)
-        if normalized:
-            times.append({
-                'time': normalized,
-                'sort_key': get_sort_key(normalized)
-            })
-    
-    # Сортируем и удаляем дубликаты
-    times_sorted = sorted(times, key=lambda x: x['sort_key'])
-    unique_times = []
-    seen = set()
-    
-    for item in times_sorted:
-        if item['time'] not in seen:
-            unique_times.append(item['time'])
-            seen.add(item['time'])
-    
-    return unique_times
 
 def get_intervals_for_stop(
     route_short_name: str,
