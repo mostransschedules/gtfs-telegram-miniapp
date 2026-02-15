@@ -387,6 +387,7 @@ function App() {
                   stop={selectedStop}
                   direction={direction}
                   dayType={dayType}
+                  schedule={schedule}
                 />
               </>
             ) : (
