@@ -95,6 +95,27 @@
   opacity: 0.8;
 }
 
+.expand-btn {
+  background: none;
+  border: none;
+  color: inherit;
+  cursor: pointer;
+  font-size: 11px;
+  padding: 4px;
+  opacity: 0.9;
+}
+
+.expand-btn:hover {
+  opacity: 1;
+}
+
+.time-ranges-list {
+  margin-top: 6px;
+  font-size: 10px;
+  opacity: 0.7;
+  line-height: 1.6;
+}
+
 /* Статистика */
 .stats-summary {
   display: flex;

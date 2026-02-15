@@ -103,6 +103,19 @@ function App() {
     }
   }
 
+  // Группировать расписание по часам
+  const groupScheduleByHour = (times) => {
+    const grouped = {}
+    times.forEach(time => {
+      const hour = parseInt(time.split(':')[0])
+      if (!grouped[hour]) {
+        grouped[hour] = []
+      }
+      grouped[hour].push(time)
+    })
+    return grouped
+  }
+
   // Загрузить остановки при выборе маршрута
   const handleRouteSelect = async (route) => {
     setSelectedRoute(route)
@@ -334,12 +347,38 @@ function App() {
               </div>
             ) : schedule.length > 0 ? (
               <>
-                <div className="schedule-times">
-                  {schedule.map((time, index) => (
-                    <div key={index} className="time-chip">
-                      {time.substring(0, 5)}
-                    </div>
-                  ))}
+                <div className="schedule-by-hour">
+                  {(() => {
+                    // Группируем по часам
+                    const byHour = {}
+                    schedule.forEach(time => {
+                      const hour = time.split(':')[0]
+                      if (!byHour[hour]) byHour[hour] = []
+                      byHour[hour].push(time.substring(0, 5))
+                    })
+                    
+                    // Сортируем часы начиная с 4:00 (начало транспортных суток)
+                    const sortedHours = Object.keys(byHour).sort((a, b) => {
+                      const ha = parseInt(a)
+                      const hb = parseInt(b)
+                      const ka = ha < 4 ? ha + 24 : ha
+                      const kb = hb < 4 ? hb + 24 : hb
+                      return ka - kb
+                    })
+                    
+                    return sortedHours.map(hour => (
+                      <div key={hour} className="hour-group">
+                        <div className="hour-header">{hour}:00</div>
+                        <div className="hour-times">
+                          {byHour[hour].map((time, idx) => (
+                            <div key={idx} className="time-chip-small">
+                              {time}
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    ))
+                  })()}
                 </div>
 
                 {/* Статистика и графики */}
