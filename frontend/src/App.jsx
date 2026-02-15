@@ -246,7 +246,7 @@ function App() {
               <div className="schedule-times">
                 {schedule.map((time, index) => (
                   <div key={index} className="time-chip">
-                    {time}
+                    {time.substring(0, 5)}
                   </div>
                 ))}
               </div>
