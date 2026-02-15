@@ -38,6 +38,8 @@ function StatsTabs({ route, stop, direction, dayType }) {
   const [loading, setLoading] = useState(false)
   const [expandedMin, setExpandedMin] = useState(false)
   const [expandedMax, setExpandedMax] = useState(false)
+  const [expandedIntervalMin, setExpandedIntervalMin] = useState(false)
+  const [expandedIntervalMax, setExpandedIntervalMax] = useState(false)
 
   useEffect(() => {
     if (route && stop) {
@@ -116,6 +118,51 @@ function StatsTabs({ route, stop, direction, dayType }) {
     return ranges
   }
 
+  // Получить все диапазоны для интервалов
+  const getAllTimeRangesForInterval = (intervals, value, isMin = true) => {
+    if (!intervals) return []
+    
+    const array = isMin ? intervals.min_intervals : intervals.max_intervals
+    const matchingHours = []
+    
+    array.forEach((val, idx) => {
+      if (val === value && val > 0) {
+        matchingHours.push(intervals.hours[idx])
+      }
+    })
+    
+    if (matchingHours.length === 0) return []
+    
+    // Сортируем хронологически
+    const sortedHours = matchingHours.sort((a, b) => {
+      const ha = a < 4 ? a + 24 : a
+      const hb = b < 4 ? b + 24 : b
+      return ha - hb
+    })
+    
+    if (sortedHours.length === 1) {
+      return [`в ${sortedHours[0]}:00`]
+    }
+    
+    // Группируем последовательные часы
+    const ranges = []
+    let rangeStart = sortedHours[0]
+    let rangeLast = sortedHours[0]
+    
+    for (let i = 1; i < sortedHours.length; i++) {
+      if (sortedHours[i] - rangeLast === 1 || (rangeLast === 23 && sortedHours[i] === 0)) {
+        rangeLast = sortedHours[i]
+      } else {
+        ranges.push(`с ${rangeStart}:00 до ${rangeLast}:00`)
+        rangeStart = sortedHours[i]
+        rangeLast = sortedHours[i]
+      }
+    }
+    ranges.push(`с ${rangeStart}:00 до ${rangeLast}:00`)
+    
+    return ranges
+  }
+
   // Данные для графика интервалов (сортировка от первого рейса)
   const getIntervalsChartData = () => {
     if (!intervals) return null
@@ -155,12 +202,21 @@ function StatsTabs({ route, stop, direction, dayType }) {
     }
   }
 
-  // Данные для графика времени рейсов
+  // Данные для графика времени рейсов (сортировка хронологически)
   const getDurationsChartData = () => {
     if (!durations || !durations.trips) return null
 
-    const labels = durations.trips.map(t => t.first_time)
-    const data = durations.trips.map(t => t.duration)
+    // Сортируем рейсы хронологически (начиная с 4:00 утра)
+    const sortedTrips = [...durations.trips].sort((a, b) => {
+      const [ha, ma] = a.first_time.split(':').map(Number)
+      const [hb, mb] = b.first_time.split(':').map(Number)
+      const ka = ha < 4 ? ha + 24 : ha
+      const kb = hb < 4 ? hb + 24 : hb
+      return (ka * 60 + ma) - (kb * 60 + mb)
+    })
+
+    const labels = sortedTrips.map(t => t.first_time.substring(0, 5)) // чч:мм формат
+    const data = sortedTrips.map(t => t.duration)
 
     return {
       labels,
@@ -358,16 +414,62 @@ function StatsTabs({ route, stop, direction, dayType }) {
                         ).toFixed(1)} мин
                       </span>
                     </div>
+                    
+                    {/* Минимальный интервал */}
                     <div className="stat-item">
                       <span className="stat-label">Минимальный:</span>
                       <span className="stat-value">
                         {Math.min(...intervals.min_intervals.filter(i => i > 0))} мин
+                        <span className="stat-time">
+                          {getAllTimeRangesForInterval(intervals, Math.min(...intervals.min_intervals.filter(i => i > 0)), true).length === 1 ? (
+                            <div>{getAllTimeRangesForInterval(intervals, Math.min(...intervals.min_intervals.filter(i => i > 0)), true)[0]}</div>
+                          ) : (
+                            <>
+                              <button 
+                                className="expand-btn"
+                                onClick={() => setExpandedIntervalMin(!expandedIntervalMin)}
+                              >
+                                {expandedIntervalMin ? '▼' : '▶'} {getAllTimeRangesForInterval(intervals, Math.min(...intervals.min_intervals.filter(i => i > 0)), true).length} периода
+                              </button>
+                              {expandedIntervalMin && (
+                                <div className="time-ranges-list">
+                                  {getAllTimeRangesForInterval(intervals, Math.min(...intervals.min_intervals.filter(i => i > 0)), true).map((range, i) => (
+                                    <div key={i}>{range}</div>
+                                  ))}
+                                </div>
+                              )}
+                            </>
+                          )}
+                        </span>
                       </span>
                     </div>
+                    
+                    {/* Максимальный интервал */}
                     <div className="stat-item">
                       <span className="stat-label">Максимальный:</span>
                       <span className="stat-value">
                         {Math.max(...intervals.max_intervals)} мин
+                        <span className="stat-time">
+                          {getAllTimeRangesForInterval(intervals, Math.max(...intervals.max_intervals), false).length === 1 ? (
+                            <div>{getAllTimeRangesForInterval(intervals, Math.max(...intervals.max_intervals), false)[0]}</div>
+                          ) : (
+                            <>
+                              <button 
+                                className="expand-btn"
+                                onClick={() => setExpandedIntervalMax(!expandedIntervalMax)}
+                              >
+                                {expandedIntervalMax ? '▼' : '▶'} {getAllTimeRangesForInterval(intervals, Math.max(...intervals.max_intervals), false).length} периода
+                              </button>
+                              {expandedIntervalMax && (
+                                <div className="time-ranges-list">
+                                  {getAllTimeRangesForInterval(intervals, Math.max(...intervals.max_intervals), false).map((range, i) => (
+                                    <div key={i}>{range}</div>
+                                  ))}
+                                </div>
+                              )}
+                            </>
+                          )}
+                        </span>
                       </span>
                     </div>
                   </div>
