@@ -27,6 +27,7 @@ function App() {
   const [dayType, setDayType] = useState('weekday')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
+  const [showError, setShowError] = useState(true)
   const [cacheWarning, setCacheWarning] = useState(null)
 
   // =============================================================================
@@ -92,6 +93,7 @@ function App() {
   const loadRoutes = async () => {
     setLoading(true)
     setError(null)
+    setShowError(true)
     try {
       const data = await getRoutes()
       setRoutes(data)
@@ -198,9 +200,18 @@ function App() {
         )}
 
         {/* Ошибка */}
-        {error && (
+        {error && showError && (
           <div className="error">
-            ❌ {error}
+            <div className="error-content">
+              <span>❌ {error}</span>
+              <button 
+                className="error-close"
+                onClick={() => setShowError(false)}
+                aria-label="Закрыть"
+              >
+                ✕
+              </button>
+            </div>
           </div>
         )}
 
