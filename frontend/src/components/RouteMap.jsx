@@ -43,16 +43,39 @@ function RouteMap({ stops, selectedStop, onStopClick }) {
     )
   }
 
-  // Вычисляем центр карты (средняя точка всех остановок)
-  const center = [
-    stops.reduce((sum, s) => sum + (s.stop_lat || 0), 0) / stops.length,
-    stops.reduce((sum, s) => sum + (s.stop_lon || 0), 0) / stops.length
-  ]
+  // Фильтруем остановки с валидными координатами
+  const validStops = stops.filter(s => 
+    s.stop_lat && 
+    s.stop_lon && 
+    !isNaN(s.stop_lat) && 
+    !isNaN(s.stop_lon) &&
+    s.stop_lat >= -90 && s.stop_lat <= 90 &&
+    s.stop_lon >= -180 && s.stop_lon <= 180
+  )
+
+  console.log('Total stops:', stops.length)
+  console.log('Valid stops:', validStops.length)
+  console.log('First valid stop:', validStops[0])
+
+  if (validStops.length === 0) {
+    return (
+      <div className="map-placeholder">
+        <p>❌ У остановок этого маршрута нет координат</p>
+      </div>
+    )
+  }
+
+  // Центр карты - первая остановка (начало маршрута)
+  const center = [validStops[0].stop_lat, validStops[0].stop_lon]
 
   // Путь маршрута (линия между остановками)
-  const routePath = stops
-    .filter(s => s.stop_lat && s.stop_lon)
-    .map(s => [s.stop_lat, s.stop_lon])
+  const routePath = validStops.map(s => [s.stop_lat, s.stop_lon])
+
+  // Вычисляем bounds для показа всех остановок
+  const bounds = validStops.length > 1 ? [
+    [Math.min(...validStops.map(s => s.stop_lat)), Math.min(...validStops.map(s => s.stop_lon))],
+    [Math.max(...validStops.map(s => s.stop_lat)), Math.max(...validStops.map(s => s.stop_lon))]
+  ] : null
 
   // Определяем иконку для остановки
   const getStopIcon = (stop, index) => {
@@ -65,7 +88,7 @@ function RouteMap({ stops, selectedStop, onStopClick }) {
       return startIcon
     }
     // Последняя остановка
-    if (index === stops.length - 1) {
+    if (index === validStops.length - 1) {
       return endIcon
     }
     // Обычная остановка
@@ -76,7 +99,7 @@ function RouteMap({ stops, selectedStop, onStopClick }) {
     <div className="route-map-container">
       {/* Информация о маршруте */}
       <div className="map-info">
-        <span>📍 {stops.length} остановок</span>
+        <span>📍 {validStops.length} остановок</span>
         <span>💡 Нажмите на остановку для просмотра расписания</span>
       </div>
 
@@ -84,6 +107,7 @@ function RouteMap({ stops, selectedStop, onStopClick }) {
       <MapContainer 
         center={center} 
         zoom={13}
+        bounds={bounds}
         className="route-map"
         scrollWheelZoom={false}
         touchZoom={true}
@@ -105,10 +129,7 @@ function RouteMap({ stops, selectedStop, onStopClick }) {
         )}
         
         {/* Маркеры остановок */}
-        {stops.map((stop, index) => {
-          // Пропускаем остановки без координат
-          if (!stop.stop_lat || !stop.stop_lon) return null
-          
+        {validStops.map((stop, index) => {
           return (
             <Marker
               key={stop.stop_id}
@@ -126,7 +147,10 @@ function RouteMap({ stops, selectedStop, onStopClick }) {
                 <div className="stop-popup">
                   <strong>{stop.stop_name}</strong>
                   <div className="stop-meta">
-                    Остановка {index + 1} из {stops.length}
+                    Остановка {index + 1} из {validStops.length}
+                  </div>
+                  <div className="stop-coords">
+                    {stop.stop_lat.toFixed(6)}, {stop.stop_lon.toFixed(6)}
                   </div>
                   {selectedStop && selectedStop.stop_id === stop.stop_id && (
                     <div className="selected-badge">✓ Выбрана</div>

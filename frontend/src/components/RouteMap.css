@@ -100,6 +100,13 @@
   margin-top: 4px;
 }
 
+.stop-coords {
+  font-size: 10px;
+  color: var(--tg-hint);
+  font-family: monospace;
+  margin-top: 2px;
+}
+
 .selected-badge {
   margin-top: 6px;
   padding: 4px 8px;
