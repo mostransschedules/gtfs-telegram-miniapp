@@ -7,6 +7,7 @@
 import { useState, useEffect } from 'react'
 import { initMiniApp, initBackButton } from '@telegram-apps/sdk'
 import { getRoutes, getStops, getSchedule } from './utils/api'
+import { getFavorites, addFavorite, removeFavorite, isFavorite } from './utils/favorites'
 import StatsTabs from './components/StatsTabs'
 import './App.css'
 
@@ -29,6 +30,8 @@ function App() {
   const [error, setError] = useState(null)
   const [showError, setShowError] = useState(true)
   const [cacheWarning, setCacheWarning] = useState(null)
+  const [favorites, setFavorites] = useState([])
+  const [showingFavorites, setShowingFavorites] = useState(false)
 
   // =============================================================================
   // ИНИЦИАЛИЗАЦИЯ TELEGRAM
@@ -75,6 +78,11 @@ function App() {
       loadStopsForRoute()
     }
   }, [direction])
+
+  // Загрузить избранное при старте
+  useEffect(() => {
+    setFavorites(getFavorites())
+  }, [])
 
   const loadStopsForRoute = async () => {
     if (!selectedRoute) return
@@ -179,6 +187,78 @@ function App() {
   }
 
   // =============================================================================
+  // ИЗБРАННОЕ
+  // =============================================================================
+
+  const handleToggleFavorite = () => {
+    if (!selectedRoute || !selectedStop) return
+
+    const favoriteData = {
+      routeName: selectedRoute.route_short_name,
+      routeLongName: selectedRoute.route_long_name,
+      stopName: selectedStop.stop_name,
+      direction: direction,
+      dayType: dayType
+    }
+
+    const isCurrentlyFavorite = isFavorite(
+      selectedRoute.route_short_name,
+      selectedStop.stop_name,
+      direction,
+      dayType
+    )
+
+    if (isCurrentlyFavorite) {
+      const id = `${favoriteData.routeName}_${favoriteData.stopName}_${favoriteData.direction}_${favoriteData.dayType}`
+      removeFavorite(id)
+    } else {
+      addFavorite(favoriteData)
+    }
+
+    // Обновляем список избранного
+    setFavorites(getFavorites())
+  }
+
+  const handleLoadFavorite = async (fav) => {
+    // Находим маршрут
+    const route = routes.find(r => r.route_short_name === fav.routeName)
+    if (!route) {
+      setError('Маршрут не найден')
+      return
+    }
+
+    setSelectedRoute(route)
+    setDirection(fav.direction)
+    setDayType(fav.dayType)
+
+    // Загружаем остановки
+    setLoading(true)
+    try {
+      const stopsData = await getStops(route.route_short_name, fav.direction)
+      setStops(stopsData)
+
+      // Находим остановку
+      const stop = stopsData.find(s => s.stop_name === fav.stopName)
+      if (stop) {
+        setSelectedStop(stop)
+
+        // Загружаем расписание
+        const result = await getSchedule(
+          route.route_short_name,
+          stop.stop_name,
+          fav.direction,
+          fav.dayType
+        )
+        setSchedule(result.schedule)
+      }
+    } catch (err) {
+      setError('Не удалось загрузить избранный маршрут')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  // =============================================================================
   // RENDER
   // =============================================================================
 
@@ -251,6 +331,42 @@ function App() {
         {!selectedRoute && (
           <div className="routes-list">
             <h2>Выберите маршрут</h2>
+            
+            {/* Избранное */}
+            {favorites.length > 0 && (
+              <div className="favorites-section">
+                <h3>⭐ Избранное</h3>
+                <div className="favorites-list">
+                  {favorites.map(fav => (
+                    <div
+                      key={fav.id}
+                      className="favorite-card"
+                      onClick={() => handleLoadFavorite(fav)}
+                    >
+                      <div className="favorite-header">
+                        <span className="favorite-route">{fav.routeName}</span>
+                        <button
+                          className="favorite-remove"
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            removeFavorite(fav.id)
+                            setFavorites(getFavorites())
+                          }}
+                        >
+                          ✕
+                        </button>
+                      </div>
+                      <div className="favorite-details">
+                        <div className="favorite-stop">📍 {fav.stopName}</div>
+                        <div className="favorite-meta">
+                          {fav.direction === 0 ? '→ Прямое' : '← Обратное'} · {fav.dayType === 'weekday' ? 'Будни' : 'Выходные'}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
             
             {/* Поле поиска */}
             <div className="search-box mb-3">
@@ -345,11 +461,22 @@ function App() {
               ← Назад к остановкам
             </button>
             
-            <h2>📍 {selectedStop.stop_name}</h2>
-            <p className="mb-3">
-              Маршрут {selectedRoute.route_short_name} · 
-              {dayType === 'weekday' ? ' Будни' : ' Выходные'}
-            </p>
+            <div className="schedule-header">
+              <div>
+                <h2>📍 {selectedStop.stop_name}</h2>
+                <p className="mb-3">
+                  Маршрут {selectedRoute.route_short_name} · 
+                  {dayType === 'weekday' ? ' Будни' : ' Выходные'}
+                </p>
+              </div>
+              <button
+                className={`favorite-button ${isFavorite(selectedRoute.route_short_name, selectedStop.stop_name, direction, dayType) ? 'active' : ''}`}
+                onClick={handleToggleFavorite}
+                title={isFavorite(selectedRoute.route_short_name, selectedStop.stop_name, direction, dayType) ? 'Удалить из избранного' : 'Добавить в избранное'}
+              >
+                {isFavorite(selectedRoute.route_short_name, selectedStop.stop_name, direction, dayType) ? '⭐' : '☆'}
+              </button>
+            </div>
             
             {loading ? (
               <div className="text-center mt-3">
