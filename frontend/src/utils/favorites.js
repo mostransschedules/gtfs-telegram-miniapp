@@ -20,19 +20,22 @@ export const getFavorites = () => {
 
 /**
  * Добавить маршрут в избранное
- * @param {Object} favorite - {routeName, stopName, direction, dayType}
+ * @param {Object} favorite - {routeName, routeLongName, stopName?, direction?, dayType?, type}
  */
 export const addFavorite = (favorite) => {
   try {
     const favorites = getFavorites()
     
+    // ID зависит от типа избранного
+    let id
+    if (favorite.type === 'route') {
+      id = `route_${favorite.routeName}`
+    } else {
+      id = `${favorite.routeName}_${favorite.stopName}_${favorite.direction}_${favorite.dayType}`
+    }
+    
     // Проверяем что такого нет уже
-    const exists = favorites.some(f => 
-      f.routeName === favorite.routeName &&
-      f.stopName === favorite.stopName &&
-      f.direction === favorite.direction &&
-      f.dayType === favorite.dayType
-    )
+    const exists = favorites.some(f => f.id === id)
     
     if (exists) {
       console.log('Already in favorites')
@@ -43,7 +46,7 @@ export const addFavorite = (favorite) => {
     favorites.unshift({
       ...favorite,
       timestamp: Date.now(),
-      id: `${favorite.routeName}_${favorite.stopName}_${favorite.direction}_${favorite.dayType}`
+      id: id
     })
     
     localStorage.setItem(FAVORITES_KEY, JSON.stringify(favorites))

@@ -32,6 +32,8 @@ function App() {
   const [cacheWarning, setCacheWarning] = useState(null)
   const [favorites, setFavorites] = useState([])
   const [showingFavorites, setShowingFavorites] = useState(false)
+  const [favoritesExpanded, setFavoritesExpanded] = useState(false)
+  const [routeViewMode, setRouteViewMode] = useState('grid') // 'grid' или 'list'
 
   // =============================================================================
   // ИНИЦИАЛИЗАЦИЯ TELEGRAM
@@ -198,7 +200,8 @@ function App() {
       routeLongName: selectedRoute.route_long_name,
       stopName: selectedStop.stop_name,
       direction: direction,
-      dayType: dayType
+      dayType: dayType,
+      type: 'stop' // тип избранного: 'stop' или 'route'
     }
 
     const isCurrentlyFavorite = isFavorite(
@@ -217,6 +220,39 @@ function App() {
 
     // Обновляем список избранного
     setFavorites(getFavorites())
+  }
+
+  const handleToggleFavoriteRoute = (route, event) => {
+    event.stopPropagation()
+
+    const favoriteData = {
+      routeName: route.route_short_name,
+      routeLongName: route.route_long_name,
+      type: 'route' // маршрут без остановки
+    }
+
+    // Проверяем есть ли этот маршрут в избранном
+    const existingFavorites = getFavorites()
+    const exists = existingFavorites.some(f => 
+      f.type === 'route' && f.routeName === route.route_short_name
+    )
+
+    if (exists) {
+      const favToRemove = existingFavorites.find(f => 
+        f.type === 'route' && f.routeName === route.route_short_name
+      )
+      if (favToRemove) {
+        removeFavorite(favToRemove.id)
+      }
+    } else {
+      addFavorite(favoriteData)
+    }
+
+    setFavorites(getFavorites())
+  }
+
+  const isFavoriteRoute = (routeName) => {
+    return favorites.some(f => f.type === 'route' && f.routeName === routeName)
   }
 
   const handleLoadFavorite = async (fav) => {
@@ -335,36 +371,88 @@ function App() {
             {/* Избранное */}
             {favorites.length > 0 && (
               <div className="favorites-section">
-                <h3>⭐ Избранное</h3>
-                <div className="favorites-list">
-                  {favorites.map(fav => (
-                    <div
-                      key={fav.id}
-                      className="favorite-card"
-                      onClick={() => handleLoadFavorite(fav)}
-                    >
-                      <div className="favorite-header">
-                        <span className="favorite-route">{fav.routeName}</span>
-                        <button
-                          className="favorite-remove"
-                          onClick={(e) => {
-                            e.stopPropagation()
-                            removeFavorite(fav.id)
-                            setFavorites(getFavorites())
-                          }}
-                        >
-                          ✕
-                        </button>
-                      </div>
-                      <div className="favorite-details">
-                        <div className="favorite-stop">📍 {fav.stopName}</div>
-                        <div className="favorite-meta">
-                          {fav.direction === 0 ? '→ Прямое' : '← Обратное'} · {fav.dayType === 'weekday' ? 'Будни' : 'Выходные'}
+                <div className="favorites-header" onClick={() => setFavoritesExpanded(!favoritesExpanded)}>
+                  <h3>⭐ Избранное ({favorites.length})</h3>
+                  <button className="expand-toggle">
+                    {favoritesExpanded ? '▼' : '▶'}
+                  </button>
+                </div>
+                
+                {favoritesExpanded && (
+                  <div className="favorites-content">
+                    {/* Избранные маршруты */}
+                    {favorites.filter(f => f.type === 'route').length > 0 && (
+                      <div className="favorites-group">
+                        <h4>🚌 Маршруты</h4>
+                        <div className="favorites-list">
+                          {favorites.filter(f => f.type === 'route').map(fav => (
+                            <div
+                              key={fav.id}
+                              className="favorite-card"
+                              onClick={() => {
+                                const route = routes.find(r => r.route_short_name === fav.routeName)
+                                if (route) handleRouteSelect(route)
+                              }}
+                            >
+                              <div className="favorite-header">
+                                <span className="favorite-route">{fav.routeName}</span>
+                                <button
+                                  className="favorite-remove"
+                                  onClick={(e) => {
+                                    e.stopPropagation()
+                                    removeFavorite(fav.id)
+                                    setFavorites(getFavorites())
+                                  }}
+                                >
+                                  ✕
+                                </button>
+                              </div>
+                              <div className="favorite-details">
+                                <div className="favorite-stop">{fav.routeLongName}</div>
+                              </div>
+                            </div>
+                          ))}
                         </div>
                       </div>
-                    </div>
-                  ))}
-                </div>
+                    )}
+
+                    {/* Избранные остановки */}
+                    {favorites.filter(f => f.type === 'stop').length > 0 && (
+                      <div className="favorites-group">
+                        <h4>📍 Остановки</h4>
+                        <div className="favorites-list">
+                          {favorites.filter(f => f.type === 'stop').map(fav => (
+                            <div
+                              key={fav.id}
+                              className="favorite-card"
+                              onClick={() => handleLoadFavorite(fav)}
+                            >
+                              <div className="favorite-header">
+                                <span className="favorite-route">{fav.routeName}</span>
+                                <button
+                                  className="favorite-remove"
+                                  onClick={(e) => {
+                                    e.stopPropagation()
+                                    removeFavorite(fav.id)
+                                    setFavorites(getFavorites())
+                                  }}
+                                >
+                                  ✕
+                                </button>
+                              </div>
+                              <div className="favorite-details">
+                                <div className="favorite-stop">📍 {fav.stopName}</div>
+                                <div className="favorite-meta">
+                                  {fav.direction === 0 ? '→ Прямое' : '← Обратное'} · {fav.dayType === 'weekday' ? 'Будни' : 'Выходные'}
+                                </div>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
             )}
             
@@ -394,15 +482,51 @@ function App() {
               </div>
             ) : filteredRoutes.length > 0 ? (
               <>
-                <div className="route-grid">
+                {/* Переключатель вида */}
+                <div className="view-toggle">
+                  <button
+                    className={`view-toggle-btn ${routeViewMode === 'grid' ? 'active' : ''}`}
+                    onClick={() => setRouteViewMode('grid')}
+                    title="Сетка"
+                  >
+                    ⊞
+                  </button>
+                  <button
+                    className={`view-toggle-btn ${routeViewMode === 'list' ? 'active' : ''}`}
+                    onClick={() => setRouteViewMode('list')}
+                    title="Список"
+                  >
+                    ☰
+                  </button>
+                </div>
+
+                <div className={routeViewMode === 'grid' ? 'route-grid' : 'route-list'}>
                   {filteredRoutes.map(route => (
                     <div
                       key={route.route_id}
-                      className="route-card"
+                      className={routeViewMode === 'grid' ? 'route-card' : 'route-card-list'}
                       onClick={() => handleRouteSelect(route)}
                     >
-                      <div className="route-number">{route.route_short_name}</div>
-                      <div className="route-name">{getRouteDisplayName(route)}</div>
+                      {routeViewMode === 'grid' ? (
+                        <>
+                          <div className="route-number">{route.route_short_name}</div>
+                          <div className="route-name">{getRouteDisplayName(route)}</div>
+                        </>
+                      ) : (
+                        <>
+                          <div className="route-list-content">
+                            <span className="route-number-list">{route.route_short_name}</span>
+                            <span className="route-name-list">{getRouteDisplayName(route)}</span>
+                          </div>
+                          <button
+                            className={`route-favorite-btn ${isFavoriteRoute(route.route_short_name) ? 'active' : ''}`}
+                            onClick={(e) => handleToggleFavoriteRoute(route, e)}
+                            title={isFavoriteRoute(route.route_short_name) ? 'Удалить из избранного' : 'Добавить в избранное'}
+                          >
+                            {isFavoriteRoute(route.route_short_name) ? '⭐' : '☆'}
+                          </button>
+                        </>
+                      )}
                     </div>
                   ))}
                 </div>
