@@ -56,6 +56,46 @@
 }
 
 /* График */
+.chart-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.chart-header h3 {
+  margin: 0;
+  font-size: 18px;
+  color: var(--tg-text);
+}
+
+.reset-zoom-btn {
+  padding: 6px 12px;
+  background: var(--tg-button);
+  color: var(--tg-button-text);
+  border: none;
+  border-radius: 6px;
+  font-size: 13px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.reset-zoom-btn:active {
+  opacity: 0.8;
+}
+
+.chart-hint {
+  background: rgba(100, 149, 237, 0.1);
+  border-left: 3px solid var(--tg-button);
+  padding: 8px 12px;
+  margin-bottom: 12px;
+  font-size: 13px;
+  color: var(--tg-hint);
+  border-radius: 4px;
+}
+
 .chart-container {
   position: relative;
   height: 300px;
