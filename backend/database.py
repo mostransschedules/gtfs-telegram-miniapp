@@ -115,54 +115,64 @@ def get_stops_for_route(route_short_name: str, direction: int) -> List[Dict]:
     Returns:
         List[Dict]: Список остановок по порядку
     """
-    con = get_connection()
-    
-    # Получаем route_id
-    route_query = """
-        SELECT route_id 
-        FROM routes 
-        WHERE route_short_name = ?
-    """
-    route_df = con.execute(route_query, [route_short_name]).df()
-    
-    if route_df.empty:
+    try:
+        con = get_connection()
+        
+        # Получаем route_id
+        route_query = """
+            SELECT route_id 
+            FROM routes 
+            WHERE route_short_name = ?
+        """
+        route_df = con.execute(route_query, [route_short_name]).df()
+        
+        if route_df.empty:
+            con.close()
+            return []
+        
+        route_id = str(route_df.iloc[0]['route_id'])
+        direction_id = str(direction)
+        
+        print(f"Getting stops for route: {route_short_name}, route_id: {route_id}, direction: {direction_id}")
+        
+        # Получаем остановки
+        query = """
+            WITH route_trips AS (
+                SELECT DISTINCT trip_id
+                FROM trips
+                WHERE CAST(route_id AS VARCHAR) = ?
+                  AND CAST(direction_id AS VARCHAR) = ?
+            ),
+            stop_sequences AS (
+                SELECT DISTINCT
+                    st.stop_id,
+                    MIN(st.stop_sequence) as min_sequence
+                FROM stop_times st
+                WHERE st.trip_id IN (SELECT trip_id FROM route_trips)
+                GROUP BY st.stop_id
+            )
+            SELECT 
+                s.stop_id,
+                s.stop_name,
+                s.stop_lat,
+                s.stop_lon,
+                ss.min_sequence as stop_sequence
+            FROM stop_sequences ss
+            JOIN stops s ON CAST(ss.stop_id AS VARCHAR) = CAST(s.stop_id AS VARCHAR)
+            ORDER BY ss.min_sequence
+        """
+        
+        df = con.execute(query, [route_id, direction_id]).df()
         con.close()
+        
+        print(f"Found {len(df)} stops")
+        
+        return df.to_dict('records')
+    except Exception as e:
+        print(f"❌ Error in get_stops_for_route: {e}")
+        import traceback
+        traceback.print_exc()
         return []
-    
-    route_id = str(route_df.iloc[0]['route_id'])
-    direction_id = str(direction)
-    
-    # Получаем остановки
-    query = """
-        WITH route_trips AS (
-            SELECT DISTINCT trip_id
-            FROM trips
-            WHERE CAST(route_id AS VARCHAR) = ?
-              AND CAST(direction_id AS VARCHAR) = ?
-        ),
-        stop_sequences AS (
-            SELECT DISTINCT
-                st.stop_id,
-                MIN(st.stop_sequence) as min_sequence
-            FROM stop_times st
-            WHERE st.trip_id IN (SELECT trip_id FROM route_trips)
-            GROUP BY st.stop_id
-        )
-        SELECT 
-            s.stop_id,
-            s.stop_name,
-            s.stop_lat,
-            s.stop_lon,
-            ss.min_sequence as stop_sequence
-        FROM stop_sequences ss
-        JOIN stops s ON ss.stop_id = s.stop_id
-        ORDER BY ss.min_sequence
-    """
-    
-    df = con.execute(query, [route_id, direction_id]).df()
-    con.close()
-    
-    return df.to_dict('records')
 
 def get_route_schedule(
     route_short_name: str, 
