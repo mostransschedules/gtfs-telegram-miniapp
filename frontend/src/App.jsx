@@ -388,6 +388,8 @@ function App() {
                   direction={direction}
                   dayType={dayType}
                   schedule={schedule}
+                  stops={stops}
+                  onStopClick={handleStopSelect}
                 />
               </>
             ) : (

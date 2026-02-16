@@ -18,6 +18,7 @@ import {
 } from 'chart.js'
 import zoomPlugin from 'chartjs-plugin-zoom'
 import { getIntervals, getDurations } from '../utils/api'
+import RouteMap from './RouteMap'
 import './StatsTabs.css'
 
 ChartJS.register(
@@ -33,7 +34,7 @@ ChartJS.register(
   zoomPlugin
 )
 
-function StatsTabs({ route, stop, direction, dayType, schedule }) {
+function StatsTabs({ route, stop, direction, dayType, schedule, stops, onStopClick }) {
   const [activeTab, setActiveTab] = useState('intervals')
   const [intervals, setIntervals] = useState(null)
   const [durations, setDurations] = useState(null)
@@ -351,6 +352,12 @@ function StatsTabs({ route, stop, direction, dayType, schedule }) {
           ⏱️ Время рейсов
         </button>
         <button
+          className={activeTab === 'map' ? 'active' : ''}
+          onClick={() => setActiveTab('map')}
+        >
+          🗺️ Карта
+        </button>
+        <button
           className={activeTab === 'stats' ? 'active' : ''}
           onClick={() => setActiveTab('stats')}
         >
@@ -552,6 +559,18 @@ function StatsTabs({ route, stop, direction, dayType, schedule }) {
                     </div>
                   </div>
                 )}
+              </div>
+            )}
+
+            {/* Вкладка: Карта */}
+            {activeTab === 'map' && (
+              <div className="tab-panel">
+                <h3>Карта маршрута</h3>
+                <RouteMap 
+                  stops={stops || []}
+                  selectedStop={stop}
+                  onStopClick={onStopClick}
+                />
               </div>
             )}
           </>

@@ -151,6 +151,8 @@ def get_stops_for_route(route_short_name: str, direction: int) -> List[Dict]:
         SELECT 
             s.stop_id,
             s.stop_name,
+            s.stop_lat,
+            s.stop_lon,
             ss.min_sequence as stop_sequence
         FROM stop_sequences ss
         JOIN stops s ON ss.stop_id = s.stop_id

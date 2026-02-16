@@ -15,7 +15,9 @@
     "axios": "^1.6.5",
     "chart.js": "^4.4.1",
     "react-chartjs-2": "^5.2.0",
-    "chartjs-plugin-zoom": "^2.0.1"
+    "chartjs-plugin-zoom": "^2.0.1",
+    "leaflet": "^1.9.4",
+    "react-leaflet": "^4.2.1"
   },
   "devDependencies": {
     "@types/react": "^18.2.48",
