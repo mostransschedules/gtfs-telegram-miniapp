@@ -214,9 +214,9 @@
 /* Адаптивность */
 @media (max-width: 480px) {
   .tabs-header button {
-    min-width: auto;
-    padding: 8px 10px;
-    font-size: 12px;
+    min-width: 110px;
+    padding: 10px 8px;
+    font-size: 13px;
   }
 
   .chart-container {
