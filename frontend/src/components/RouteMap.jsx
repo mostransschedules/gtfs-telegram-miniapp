@@ -2,8 +2,7 @@
 // ROUTE MAP - Карта маршрута с остановками
 // =============================================================================
 
-import { useState, useEffect } from 'react'
-import { MapContainer, TileLayer, Marker, Polyline, Popup } from 'react-leaflet'
+import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import './RouteMap.css'
@@ -33,8 +32,6 @@ const stopIcon = createIcon('🚏', 'stop')
 const selectedIcon = createIcon('📍', 'selected')
 
 function RouteMap({ stops, selectedStop, onStopClick }) {
-  const [roadRoute, setRoadRoute] = useState([])
-  const [loadingRoute, setLoadingRoute] = useState(false)
   
   // Если нет остановок, не показываем карту
   if (!stops || stops.length === 0) {
@@ -70,52 +67,11 @@ function RouteMap({ stops, selectedStop, onStopClick }) {
   // Центр карты - первая остановка (начало маршрута)
   const center = [validStops[0].stop_lat, validStops[0].stop_lon]
 
-  // Путь маршрута (линия между остановками)
-  const routePath = validStops.map(s => [s.stop_lat, s.stop_lon])
-
   // Вычисляем bounds для показа всех остановок
   const bounds = validStops.length > 1 ? [
     [Math.min(...validStops.map(s => s.stop_lat)), Math.min(...validStops.map(s => s.stop_lon))],
     [Math.max(...validStops.map(s => s.stop_lat)), Math.max(...validStops.map(s => s.stop_lon))]
   ] : null
-
-  // Загружаем маршрут по дорогам через OSRM API
-  useEffect(() => {
-    if (validStops.length < 2) return
-    
-    setLoadingRoute(true)
-    
-    // Ограничиваем до 100 остановок (лимит OSRM)
-    const stopsForRoute = validStops.length > 100 ? validStops.filter((_, i) => i % 2 === 0) : validStops
-    
-    // Формируем координаты для OSRM (lon,lat формат)
-    const coords = stopsForRoute
-      .map(s => `${s.stop_lon},${s.stop_lat}`)
-      .join(';')
-    
-    // Запрос к OSRM API
-    fetch(`https://router.project-osrm.org/route/v1/driving/${coords}?geometries=geojson&overview=full`)
-      .then(res => res.json())
-      .then(data => {
-        if (data.routes && data.routes.length > 0) {
-          // Конвертируем координаты из [lon, lat] в [lat, lon] для Leaflet
-          const route = data.routes[0].geometry.coordinates.map(c => [c[1], c[0]])
-          setRoadRoute(route)
-          console.log(`✅ Маршрут по дорогам загружен: ${route.length} точек`)
-        } else {
-          console.warn('⚠️ OSRM не вернул маршрут, используем прямые линии')
-          setRoadRoute([])
-        }
-      })
-      .catch(err => {
-        console.error('❌ Ошибка загрузки маршрута:', err)
-        console.log('Используем прямые линии между остановками')
-        setRoadRoute([])
-      })
-      .finally(() => {
-        setLoadingRoute(false)
-      })
-  }, [validStops])
 
   // Определяем иконку для остановки
   const getStopIcon = (stop, index) => {
@@ -140,13 +96,7 @@ function RouteMap({ stops, selectedStop, onStopClick }) {
       {/* Информация о маршруте */}
       <div className="map-info">
         <span>📍 {validStops.length} остановок</span>
-        {loadingRoute ? (
-          <span>🔄 Загружаем маршрут по дорогам...</span>
-        ) : roadRoute.length > 0 ? (
-          <span>✅ Маршрут построен по дорогам</span>
-        ) : (
-          <span>💡 Нажмите на остановку для просмотра расписания</span>
-        )}
+        <span>💡 Нажмите на остановку для просмотра расписания</span>
       </div>
 
       {/* Карта */}
@@ -163,26 +113,6 @@ function RouteMap({ stops, selectedStop, onStopClick }) {
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
         />
-        
-        {/* Линия маршрута */}
-        {roadRoute.length > 0 ? (
-          // Маршрут по дорогам от OSRM
-          <Polyline 
-            positions={roadRoute}
-            color="#2196F3"
-            weight={4}
-            opacity={0.8}
-          />
-        ) : routePath.length > 1 ? (
-          // Прямые линии между остановками (fallback)
-          <Polyline 
-            positions={routePath}
-            color="#2196F3"
-            weight={4}
-            opacity={0.5}
-            dashArray="10, 10"
-          />
-        ) : null}
         
         {/* Маркеры остановок */}
         {validStops.map((stop, index) => {
