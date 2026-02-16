@@ -137,8 +137,8 @@ def get_stops_for_route(route_short_name: str, direction: int) -> List[Dict]:
         WITH route_trips AS (
             SELECT DISTINCT trip_id
             FROM trips
-            WHERE route_id = ?
-              AND direction_id = ?
+            WHERE CAST(route_id AS VARCHAR) = ?
+              AND CAST(direction_id AS VARCHAR) = ?
         ),
         stop_sequences AS (
             SELECT DISTINCT
