@@ -340,3 +340,155 @@
   margin-bottom: 16px;
 }
 
+/* ============================================================
+   ИЗБРАННОЕ
+   ============================================================ */
+
+/* Секция избранного */
+.favorites-section {
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 2px solid var(--tg-secondary-bg);
+}
+
+.favorites-section h3 {
+  font-size: 18px;
+  margin-bottom: 12px;
+  color: var(--tg-text);
+}
+
+/* Список избранного */
+.favorites-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* Карточка избранного */
+.favorite-card {
+  background: var(--tg-secondary-bg);
+  border-radius: 12px;
+  padding: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: 2px solid transparent;
+}
+
+.favorite-card:hover {
+  border-color: var(--tg-button);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.favorite-card:active {
+  transform: translateY(0);
+}
+
+/* Заголовок карточки избранного */
+.favorite-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.favorite-route {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--tg-button);
+}
+
+.favorite-remove {
+  background: rgba(244, 67, 54, 0.1);
+  color: #f44336;
+  border: none;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.2s;
+}
+
+.favorite-remove:hover {
+  background: rgba(244, 67, 54, 0.2);
+  transform: scale(1.1);
+}
+
+.favorite-remove:active {
+  transform: scale(0.95);
+}
+
+/* Детали избранного */
+.favorite-details {
+  font-size: 14px;
+}
+
+.favorite-stop {
+  color: var(--tg-text);
+  margin-bottom: 4px;
+  font-weight: 500;
+}
+
+.favorite-meta {
+  color: var(--tg-hint);
+  font-size: 12px;
+}
+
+/* Заголовок расписания с кнопкой избранного */
+.schedule-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.schedule-header > div {
+  flex: 1;
+}
+
+/* Кнопка избранного (звёздочка) */
+.favorite-button {
+  background: var(--tg-secondary-bg);
+  border: 2px solid var(--tg-hint);
+  border-radius: 50%;
+  width: 48px;
+  height: 48px;
+  font-size: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s;
+  flex-shrink: 0;
+}
+
+.favorite-button:hover {
+  transform: scale(1.1);
+  border-color: var(--tg-button);
+}
+
+.favorite-button:active {
+  transform: scale(0.95);
+}
+
+.favorite-button.active {
+  background: var(--tg-button);
+  border-color: var(--tg-button);
+  color: #FFD700;
+  animation: star-pulse 0.5s ease-out;
+}
+
+@keyframes star-pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.2);
+  }
+}
+
+
