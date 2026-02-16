@@ -67,8 +67,7 @@ function App() {
     } else {
       const query = searchQuery.toLowerCase()
       const filtered = routes.filter(route => 
-        route.route_short_name.toLowerCase().includes(query) ||
-        route.route_long_name.toLowerCase().includes(query)
+        route.route_short_name.toLowerCase().includes(query)
       )
       setFilteredRoutes(filtered)
     }
@@ -460,7 +459,7 @@ function App() {
             <div className="search-box mb-3">
               <input
                 type="text"
-                placeholder="🔍 Поиск маршрута..."
+                placeholder="🔍 Поиск по номеру маршрута..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="search-input"
