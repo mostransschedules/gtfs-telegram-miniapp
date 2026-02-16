@@ -16,6 +16,7 @@ import {
   Legend,
   Filler
 } from 'chart.js'
+import zoomPlugin from 'chartjs-plugin-zoom'
 import { getIntervals, getDurations } from '../utils/api'
 import './StatsTabs.css'
 
@@ -28,7 +29,8 @@ ChartJS.register(
   Title,
   Tooltip,
   Legend,
-  Filler
+  Filler,
+  zoomPlugin
 )
 
 function StatsTabs({ route, stop, direction, dayType, schedule }) {
@@ -40,6 +42,15 @@ function StatsTabs({ route, stop, direction, dayType, schedule }) {
   const [expandedMax, setExpandedMax] = useState(false)
   const [expandedIntervalMin, setExpandedIntervalMin] = useState(false)
   const [expandedIntervalMax, setExpandedIntervalMax] = useState(false)
+  
+  const chartRef = { current: null }
+
+  // Сброс zoom
+  const resetZoom = () => {
+    if (chartRef.current) {
+      chartRef.current.resetZoom()
+    }
+  }
 
   useEffect(() => {
     if (route && stop) {
@@ -279,6 +290,25 @@ function StatsTabs({ route, stop, direction, dayType, schedule }) {
         labels: {
           color: window.Telegram?.WebApp?.themeParams?.text_color || '#000000'
         }
+      },
+      zoom: {
+        pan: {
+          enabled: true,
+          mode: 'x',
+          modifierKey: null
+        },
+        zoom: {
+          wheel: {
+            enabled: false  // Отключаем zoom колесом на десктопе
+          },
+          pinch: {
+            enabled: true  // Включаем pinch-to-zoom на мобильных
+          },
+          mode: 'x'
+        },
+        limits: {
+          x: { min: 'original', max: 'original' }
+        }
       }
     },
     scales: {
@@ -338,10 +368,19 @@ function StatsTabs({ route, stop, direction, dayType, schedule }) {
           <>
             {activeTab === 'intervals' && (
               <div className="tab-panel">
-                <h3>График интервалов по часам</h3>
+                <div className="chart-header">
+                  <h3>График интервалов по часам</h3>
+                  <button className="reset-zoom-btn" onClick={resetZoom}>
+                    🔄 Сбросить масштаб
+                  </button>
+                </div>
+                <div className="chart-hint">
+                  💡 Используйте жесты: приближение пальцами для zoom, свайп для прокрутки
+                </div>
                 {intervals && getIntervalsChartData() ? (
                   <div className="chart-container">
                     <Line 
+                      ref={chartRef}
                       data={getIntervalsChartData()} 
                       options={chartOptions}
                     />

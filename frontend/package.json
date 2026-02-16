@@ -14,7 +14,8 @@
     "@telegram-apps/sdk": "^1.0.0",
     "axios": "^1.6.5",
     "chart.js": "^4.4.1",
-    "react-chartjs-2": "^5.2.0"
+    "react-chartjs-2": "^5.2.0",
+    "chartjs-plugin-zoom": "^2.0.1"
   },
   "devDependencies": {
     "@types/react": "^18.2.48",
