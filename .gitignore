@@ -21,4 +21,4 @@ dist
 .idea
 
 # НЕ игнорируем .duckdb - нам нужно загрузить БД на GitHub!
-# Render скачает её оттуда
+# Render скачает её оттуда"backend/gtfs_transport.duckdb" 

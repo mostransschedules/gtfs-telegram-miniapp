@@ -1,1 +1,2 @@
-*.duckdb filter=lfs diff=lfs merge=lfs -text
+# Git LFS - больше не храним duckdb здесь, используем GitHub Releases
+# *.duckdb filter=lfs diff=lfs merge=lfs -text
