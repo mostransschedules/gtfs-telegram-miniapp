@@ -180,6 +180,12 @@
   flex-shrink: 0;
 }
 
+.next-departures-loading {
+  font-size: 12px;
+  color: var(--tg-hint);
+  margin-bottom: 8px;
+}
+
 /* Контейнер для названия и ближайшего рейса */
 .stop-info {
   flex: 1;
