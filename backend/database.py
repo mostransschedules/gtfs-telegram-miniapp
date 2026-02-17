@@ -223,15 +223,17 @@ def get_route_schedule(
                   AND CAST(t.direction_id AS VARCHAR) = ?
                   AND CAST(t.service_id AS VARCHAR) IN (SELECT service_id FROM valid_services)
             ),
-            stop_ids AS (
-                SELECT CAST(stop_id AS VARCHAR) as stop_id
-                FROM stops
-                WHERE stop_name = ?
+            valid_stop_ids AS (
+                SELECT DISTINCT CAST(st.stop_id AS VARCHAR) as stop_id
+                FROM stop_times st
+                JOIN stops s ON CAST(st.stop_id AS VARCHAR) = CAST(s.stop_id AS VARCHAR)
+                WHERE st.trip_id IN (SELECT trip_id FROM route_trips)
+                  AND s.stop_name = ?
             )
             SELECT DISTINCT st.arrival_time
             FROM stop_times st
             WHERE st.trip_id IN (SELECT trip_id FROM route_trips)
-              AND CAST(st.stop_id AS VARCHAR) IN (SELECT stop_id FROM stop_ids)
+              AND CAST(st.stop_id AS VARCHAR) IN (SELECT stop_id FROM valid_stop_ids)
             ORDER BY st.arrival_time
         """
         
