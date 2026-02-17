@@ -86,10 +86,41 @@ function App() {
       const data = await getStops(selectedRoute.route_short_name, direction)
       setStops(data)
       setNextDepartures({}) // сбрасываем кэш при смене маршрута/направления
+      
+      // Загружаем ближайшие рейсы для всех остановок параллельно
+      loadAllNextDepartures(data)
     } catch (err) {
       setError('Не удалось загрузить остановки')
     } finally {
       setLoading(false)
+    }
+  }
+
+  // Загрузить ближайшие рейсы для всех остановок сразу
+  const loadAllNextDepartures = async (stopsData) => {
+    if (!selectedRoute || !stopsData?.length) return
+
+    // Загружаем параллельно, но порциями по 5 чтобы не перегружать сервер
+    const chunkSize = 5
+    for (let i = 0; i < stopsData.length; i += chunkSize) {
+      const chunk = stopsData.slice(i, i + chunkSize)
+      await Promise.all(chunk.map(async (stop) => {
+        try {
+          const result = await getSchedule(
+            selectedRoute.route_short_name,
+            stop.stop_name,
+            direction,
+            dayType
+          )
+          const next = getNextDeparture(result.schedule)
+          setNextDepartures(prev => ({
+            ...prev,
+            [stop.stop_name]: next
+          }))
+        } catch (err) {
+          // Тихо игнорируем ошибки для отдельных остановок
+        }
+      }))
     }
   }
 
@@ -459,6 +490,9 @@ function App() {
               setDayType('weekday')
               if (selectedRoute && selectedStop) {
                 loadScheduleForStop(selectedStop, direction, 'weekday')
+              } else if (selectedRoute && stops.length > 0) {
+                setNextDepartures({})
+                loadAllNextDepartures(stops)
               }
             }}
           >
@@ -470,6 +504,9 @@ function App() {
               setDayType('weekend')
               if (selectedRoute && selectedStop) {
                 loadScheduleForStop(selectedStop, direction, 'weekend')
+              } else if (selectedRoute && stops.length > 0) {
+                setNextDepartures({})
+                loadAllNextDepartures(stops)
               }
             }}
           >
@@ -693,6 +730,11 @@ function App() {
             
             <h2>Маршрут {selectedRoute.route_short_name}</h2>
             <p className="mb-3">{getRouteDisplayName(selectedRoute)}</p>
+            {Object.keys(nextDepartures).length > 0 && Object.keys(nextDepartures).length < stops.length && (
+              <p className="next-departures-loading">
+                🕐 Загружаем время рейсов... {Object.keys(nextDepartures).length}/{stops.length}
+              </p>
+            )}
             
             {loading ? (
               <div className="text-center mt-3">
@@ -714,8 +756,6 @@ function App() {
                     key={index}
                     className="stop-card"
                     onClick={() => handleStopSelect(stop)}
-                    onMouseEnter={() => loadNextDeparture(stop)}
-                    onTouchStart={() => loadNextDeparture(stop)}
                   >
                     <div className="stop-number">{index + 1}</div>
                     <div className="stop-info">
