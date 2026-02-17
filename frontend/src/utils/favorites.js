@@ -6,12 +6,28 @@ const FAVORITES_KEY = 'gtfs_favorites'
 
 /**
  * Получить список избранных маршрутов
- * @returns {Array} Массив объектов {routeName, stopName, direction, dayType, timestamp}
+ * @returns {Array} Массив объектов
  */
 export const getFavorites = () => {
   try {
     const stored = localStorage.getItem(FAVORITES_KEY)
-    return stored ? JSON.parse(stored) : []
+    const favorites = stored ? JSON.parse(stored) : []
+    
+    // Миграция старых записей без поля type
+    const migrated = favorites.map(f => {
+      if (!f.type) {
+        return { ...f, type: f.stopName ? 'stop' : 'route' }
+      }
+      return f
+    })
+    
+    // Сохраняем если были изменения
+    const hadChanges = favorites.some(f => !f.type)
+    if (hadChanges) {
+      localStorage.setItem(FAVORITES_KEY, JSON.stringify(migrated))
+    }
+    
+    return migrated
   } catch (error) {
     console.error('Error reading favorites:', error)
     return []
