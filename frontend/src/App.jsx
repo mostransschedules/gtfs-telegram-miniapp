@@ -290,29 +290,46 @@ function App() {
     if (!scheduleData || scheduleData.length === 0) return null
 
     const now = new Date()
-    const currentMinutes = now.getHours() * 60 + now.getMinutes()
+    // Используем часы И минуты текущего времени
+    const nowH = now.getHours()
+    const nowM = now.getMinutes()
 
-    // Нормализуем текущее время для транспортных суток
-    const normalizedNow = currentMinutes < 4 * 60
-      ? currentMinutes + 24 * 60
-      : currentMinutes
+    // Нормализуем текущее время для транспортных суток (после полуночи до 4:00)
+    const normalizedNow = nowH < 4
+      ? (nowH + 24) * 60 + nowM
+      : nowH * 60 + nowM
 
-    // schedule - плоский массив строк ["06:12", "06:22", ...]
-    const allTimes = scheduleData.map(time => {
-      const [h, m] = time.substring(0, 5).split(':').map(Number)
-      const totalMin = h < 4 ? (h + 24) * 60 + m : h * 60 + m
-      return { time: time.substring(0, 5), totalMin }
-    })
+    // Парсим только реальные времена из расписания (первые 5 символов "HH:MM")
+    const allTimes = scheduleData
+      .map(time => {
+        const str = String(time).substring(0, 5)
+        const parts = str.split(':')
+        if (parts.length < 2) return null
+        const h = parseInt(parts[0], 10)
+        const m = parseInt(parts[1], 10)
+        if (isNaN(h) || isNaN(m)) return null
+        // Нормализуем для транспортных суток
+        const totalMin = h < 4 ? (h + 24) * 60 + m : h * 60 + m
+        return { time: str, totalMin }
+      })
+      .filter(Boolean)
 
-    // Сортируем по времени
+    // Сортируем по нормализованному времени
     allTimes.sort((a, b) => a.totalMin - b.totalMin)
 
-    // Ищем первый рейс после текущего времени
-    const next = allTimes.find(t => t.totalMin > normalizedNow)
+    // Ищем первый рейс СТРОГО после текущего времени
+    const next = allTimes.find(t => t.totalMin >= normalizedNow)
 
     if (!next) return null
 
     const diffMin = next.totalMin - normalizedNow
+
+    // Отладка: показываем 3 ближайших рейса
+    const nearby = allTimes.filter(t => t.totalMin >= normalizedNow).slice(0, 3)
+    console.log(`⏰ Текущее время: ${nowH}:${String(nowM).padStart(2,'0')} (${normalizedNow} мин)`)
+    console.log(`📋 3 ближайших из расписания:`, nearby.map(t => t.time))
+    console.log(`✅ Выбран: ${next.time} (через ${diffMin} мин)`)
+
     return { time: next.time, diffMin }
   }
 
