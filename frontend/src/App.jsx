@@ -85,10 +85,10 @@ function App() {
     try {
       const data = await getStops(selectedRoute.route_short_name, direction)
       setStops(data)
-      setNextDepartures({}) // сбрасываем кэш при смене маршрута/направления
+      setNextDepartures({})
       
-      // Загружаем ближайшие рейсы для всех остановок параллельно
-      loadAllNextDepartures(data)
+      // Передаём routeName явно - избегаем проблемы с замыканием
+      loadAllNextDepartures(data, selectedRoute.route_short_name, direction, dayType)
     } catch (err) {
       setError('Не удалось загрузить остановки')
     } finally {
@@ -97,31 +97,30 @@ function App() {
   }
 
   // Загрузить ближайшие рейсы для всех остановок сразу
-  const loadAllNextDepartures = async (stopsData) => {
-    if (!selectedRoute || !stopsData?.length) return
+  const loadAllNextDepartures = async (stopsData, routeName, dir, dt) => {
+    if (!routeName || !stopsData?.length) return
 
-    // Загружаем параллельно, но порциями по 5 чтобы не перегружать сервер
+    console.log(`🚌 Загружаем ближайшие рейсы для ${stopsData.length} остановок маршрута ${routeName}...`)
+
     const chunkSize = 5
     for (let i = 0; i < stopsData.length; i += chunkSize) {
       const chunk = stopsData.slice(i, i + chunkSize)
       await Promise.all(chunk.map(async (stop) => {
         try {
-          const result = await getSchedule(
-            selectedRoute.route_short_name,
-            stop.stop_name,
-            direction,
-            dayType
-          )
+          const result = await getSchedule(routeName, stop.stop_name, dir, dt)
+          console.log(`✅ ${stop.stop_name}: ${result.schedule?.length} рейсов`)
           const next = getNextDeparture(result.schedule)
+          console.log(`   → ближайший: ${next ? next.time + ' через ' + next.diffMin + ' мин' : 'нет'}`)
           setNextDepartures(prev => ({
             ...prev,
             [stop.stop_name]: next
           }))
         } catch (err) {
-          // Тихо игнорируем ошибки для отдельных остановок
+          console.error(`❌ Ошибка для ${stop.stop_name}:`, err)
         }
       }))
     }
+    console.log('✅ Загрузка ближайших рейсов завершена')
   }
 
   // Загрузить расписание для остановки (с текущими direction и dayType)
@@ -489,7 +488,7 @@ function App() {
                 loadScheduleForStop(selectedStop, direction, 'weekday')
               } else if (selectedRoute && stops.length > 0) {
                 setNextDepartures({})
-                loadAllNextDepartures(stops)
+                loadAllNextDepartures(stops, selectedRoute.route_short_name, direction, 'weekday')
               }
             }}
           >
