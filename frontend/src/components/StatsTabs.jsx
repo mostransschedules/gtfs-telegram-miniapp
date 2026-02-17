@@ -343,25 +343,25 @@ function StatsTabs({ route, stop, direction, dayType, schedule, stops, onStopCli
           className={activeTab === 'intervals' ? 'active' : ''}
           onClick={() => setActiveTab('intervals')}
         >
-          📊 Интервалы
+          Интервалы
         </button>
         <button
           className={activeTab === 'durations' ? 'active' : ''}
           onClick={() => setActiveTab('durations')}
         >
-          ⏱️ Время рейсов
+          Время рейсов
         </button>
         <button
           className={activeTab === 'map' ? 'active' : ''}
           onClick={() => setActiveTab('map')}
         >
-          🗺️ Карта
+          Карта
         </button>
         <button
           className={activeTab === 'stats' ? 'active' : ''}
           onClick={() => setActiveTab('stats')}
         >
-          📈 Статистика
+          Статистика
         </button>
       </div>
 

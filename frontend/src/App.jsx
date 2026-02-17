@@ -73,13 +73,6 @@ function App() {
     }
   }, [searchQuery, routes])
 
-  // Перезагрузить остановки при смене направления
-  useEffect(() => {
-    if (selectedRoute && !selectedStop) {
-      loadStopsForRoute()
-    }
-  }, [direction])
-
   // Загрузить избранное при старте
   useEffect(() => {
     setFavorites(getFavorites())
@@ -92,8 +85,75 @@ function App() {
     try {
       const data = await getStops(selectedRoute.route_short_name, direction)
       setStops(data)
+      setNextDepartures({}) // сбрасываем кэш при смене маршрута/направления
     } catch (err) {
       setError('Не удалось загрузить остановки')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  // Загрузить расписание для остановки (с текущими direction и dayType)
+  const loadScheduleForStop = async (stop, newDirection = direction, newDayType = dayType) => {
+    if (!selectedRoute || !stop) return
+
+    setLoading(true)
+    setCacheWarning(null)
+
+    try {
+      const result = await getSchedule(
+        selectedRoute.route_short_name,
+        stop.stop_name,
+        newDirection,
+        newDayType
+      )
+      setSchedule(result.schedule)
+
+      if (result.fromCache) {
+        setCacheWarning(result.error || 'Показаны сохранённые данные')
+      }
+    } catch (err) {
+      setError('Не удалось загрузить расписание')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  // При смене направления - ищем ту же остановку в новом направлении
+  const handleDirectionChange = async (newDirection) => {
+    if (!selectedRoute) return
+
+    setLoading(true)
+    setCacheWarning(null)
+
+    try {
+      // Загружаем остановки нового направления
+      const newStops = await getStops(selectedRoute.route_short_name, newDirection)
+      setStops(newStops)
+
+      if (selectedStop) {
+        // Ищем ту же остановку в новом направлении
+        const sameStop = newStops.find(s => s.stop_name === selectedStop.stop_name)
+
+        if (sameStop) {
+          // Остановка есть в новом направлении - загружаем расписание
+          setSelectedStop(sameStop)
+          const result = await getSchedule(
+            selectedRoute.route_short_name,
+            sameStop.stop_name,
+            newDirection,
+            dayType
+          )
+          setSchedule(result.schedule)
+          if (result.fromCache) setCacheWarning(result.error || 'Показаны сохранённые данные')
+        } else {
+          // Остановки нет в новом направлении - возвращаемся к списку
+          setSelectedStop(null)
+          setSchedule([])
+        }
+      }
+    } catch (err) {
+      setError('Не удалось загрузить данные')
     } finally {
       setLoading(false)
     }
@@ -190,6 +250,67 @@ function App() {
   // =============================================================================
   // ИЗБРАННОЕ
   // =============================================================================
+
+  // Вычислить ближайший рейс из расписания относительно текущего времени
+  const getNextDeparture = (scheduleData) => {
+    if (!scheduleData || scheduleData.length === 0) return null
+
+    const now = new Date()
+    const currentMinutes = now.getHours() * 60 + now.getMinutes()
+
+    // Собираем все времена в минутах
+    const allTimes = []
+    scheduleData.forEach(hourData => {
+      hourData.times.forEach(time => {
+        const [h, m] = time.split(':').map(Number)
+        // Учитываем транспортные сутки (рейсы после полуночи)
+        const totalMin = h < 4 ? (h + 24) * 60 + m : h * 60 + m
+        allTimes.push({ time, totalMin })
+      })
+    })
+
+    // Текущее время тоже нормализуем
+    const normalizedNow = currentMinutes < 4 * 60 
+      ? currentMinutes + 24 * 60 
+      : currentMinutes
+
+    // Ищем первый рейс после текущего времени
+    const next = allTimes.find(t => t.totalMin > normalizedNow)
+
+    if (!next) return null
+
+    // Считаем через сколько минут
+    const diffMin = next.totalMin - normalizedNow
+
+    return { time: next.time, diffMin }
+  }
+
+  // Кэш ближайших рейсов для остановок {stopName: {time, diffMin}}
+  const [nextDepartures, setNextDepartures] = useState({})
+
+  const loadNextDeparture = async (stop) => {
+    // Уже загружали - пропускаем
+    if (nextDepartures[stop.stop_name] !== undefined) return
+
+    try {
+      const result = await getSchedule(
+        selectedRoute.route_short_name,
+        stop.stop_name,
+        direction,
+        dayType
+      )
+      const next = getNextDeparture(result.schedule)
+      setNextDepartures(prev => ({
+        ...prev,
+        [stop.stop_name]: next
+      }))
+    } catch (err) {
+      setNextDepartures(prev => ({
+        ...prev,
+        [stop.stop_name]: null
+      }))
+    }
+  }
 
   const handleToggleFavorite = () => {
     if (!selectedRoute || !selectedStop) return
@@ -334,13 +455,23 @@ function App() {
         <div className="day-type-selector mb-3">
           <button
             className={dayType === 'weekday' ? 'active' : ''}
-            onClick={() => setDayType('weekday')}
+            onClick={() => {
+              setDayType('weekday')
+              if (selectedRoute && selectedStop) {
+                loadScheduleForStop(selectedStop, direction, 'weekday')
+              }
+            }}
           >
             Будни
           </button>
           <button
             className={dayType === 'weekend' ? 'active' : ''}
-            onClick={() => setDayType('weekend')}
+            onClick={() => {
+              setDayType('weekend')
+              if (selectedRoute && selectedStop) {
+                loadScheduleForStop(selectedStop, direction, 'weekend')
+              }
+            }}
           >
             Выходные
           </button>
@@ -350,13 +481,19 @@ function App() {
         <div className="direction-selector mb-3">
           <button
             className={direction === 0 ? 'active' : ''}
-            onClick={() => setDirection(0)}
+            onClick={() => {
+              setDirection(0)
+              handleDirectionChange(0)
+            }}
           >
             ➡️ Прямое
           </button>
           <button
             className={direction === 1 ? 'active' : ''}
-            onClick={() => setDirection(1)}
+            onClick={() => {
+              setDirection(1)
+              handleDirectionChange(1)
+            }}
           >
             ⬅️ Обратное
           </button>
@@ -563,16 +700,62 @@ function App() {
                 <p className="mt-2">Загружаем остановки...</p>
               </div>
             ) : (
-              stops.map((stop, index) => (
-                <div
-                  key={index}
-                  className="stop-card"
-                  onClick={() => handleStopSelect(stop)}
-                >
-                  <div className="stop-number">{index + 1}</div>
-                  <div className="stop-name">{stop.stop_name}</div>
-                </div>
-              ))
+              stops.map((stop, index) => {
+                const next = nextDepartures[stop.stop_name]
+                const isStopFav = isFavorite(
+                  selectedRoute.route_short_name,
+                  stop.stop_name,
+                  direction,
+                  dayType
+                )
+
+                return (
+                  <div
+                    key={index}
+                    className="stop-card"
+                    onClick={() => handleStopSelect(stop)}
+                    onMouseEnter={() => loadNextDeparture(stop)}
+                    onTouchStart={() => loadNextDeparture(stop)}
+                  >
+                    <div className="stop-number">{index + 1}</div>
+                    <div className="stop-info">
+                      <div className="stop-name">{stop.stop_name}</div>
+                      {next && (
+                        <div className="stop-next-departure">
+                          🕐 {next.time}
+                          {next.diffMin <= 60
+                            ? ` · через ${next.diffMin} мин`
+                            : ''}
+                        </div>
+                      )}
+                    </div>
+                    <button
+                      className={`stop-favorite-btn ${isStopFav ? 'active' : ''}`}
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        const favoriteData = {
+                          routeName: selectedRoute.route_short_name,
+                          routeLongName: selectedRoute.route_long_name,
+                          stopName: stop.stop_name,
+                          direction: direction,
+                          dayType: dayType,
+                          type: 'stop'
+                        }
+                        if (isStopFav) {
+                          removeFavorite(`${selectedRoute.route_short_name}_${stop.stop_name}_${direction}_${dayType}`)
+                        } else {
+                          addFavorite(favoriteData)
+                          // Подгружаем ближайший рейс сразу
+                          loadNextDeparture(stop)
+                        }
+                        setFavorites(getFavorites())
+                      }}
+                    >
+                      {isStopFav ? '⭐' : '☆'}
+                    </button>
+                  </div>
+                )
+              })
             )}
           </div>
         )}
