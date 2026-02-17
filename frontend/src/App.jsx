@@ -33,7 +33,8 @@ function App() {
   const [favorites, setFavorites] = useState([])
   const [showingFavorites, setShowingFavorites] = useState(false)
   const [favoritesExpanded, setFavoritesExpanded] = useState(false)
-  const [routeViewMode, setRouteViewMode] = useState('grid') // 'grid' или 'list'
+  const [routeViewMode, setRouteViewMode] = useState('grid')
+  const [favNextDepartures, setFavNextDepartures] = useState({}) // 'grid' или 'list'
 
   // =============================================================================
   // ИНИЦИАЛИЗАЦИЯ TELEGRAM
@@ -405,6 +406,36 @@ function App() {
     return favorites.some(f => f.type === 'route' && f.routeName === routeName)
   }
 
+  // Загрузить ближайшие рейсы для избранных остановок
+  const loadFavNextDepartures = async (favStops) => {
+    if (!favStops?.length) return
+
+    const now = new Date()
+    // Определяем тип дня автоматически по текущему дню недели
+    const isWeekend = now.getDay() === 0 || now.getDay() === 6
+    const currentDayType = isWeekend ? 'weekend' : 'weekday'
+
+    await Promise.all(favStops.map(async (fav) => {
+      // Уже загружено - пропускаем
+      if (favNextDepartures[fav.id] !== undefined) return
+      try {
+        const result = await getSchedule(
+          fav.routeName,
+          fav.stopName,
+          fav.direction,
+          currentDayType
+        )
+        const next = getNextDeparture(result.schedule)
+        setFavNextDepartures(prev => ({
+          ...prev,
+          [fav.id]: next
+        }))
+      } catch (err) {
+        setFavNextDepartures(prev => ({ ...prev, [fav.id]: null }))
+      }
+    }))
+  }
+
   const handleLoadFavorite = async (fav) => {
     // Находим маршрут
     const route = routes.find(r => r.route_short_name === fav.routeName)
@@ -543,7 +574,15 @@ function App() {
             {/* Избранное */}
             {favorites.length > 0 && (
               <div className="favorites-section">
-                <div className="favorites-header" onClick={() => setFavoritesExpanded(!favoritesExpanded)}>
+                <div className="favorites-header" onClick={() => {
+                  const newExpanded = !favoritesExpanded
+                  setFavoritesExpanded(newExpanded)
+                  // Загружаем ближайшие рейсы при первом разворачивании
+                  if (newExpanded) {
+                    const favStops = favorites.filter(f => f.type === 'stop')
+                    loadFavNextDepartures(favStops)
+                  }
+                }}>
                   <h3>⭐ Избранное ({favorites.length})</h3>
                   <button className="expand-toggle">
                     {favoritesExpanded ? '▼' : '▶'}
@@ -593,33 +632,49 @@ function App() {
                       <div className="favorites-group">
                         <h4>📍 Остановки</h4>
                         <div className="favorites-list">
-                          {favorites.filter(f => f.type === 'stop').map(fav => (
-                            <div
-                              key={fav.id}
-                              className="favorite-card"
-                              onClick={() => handleLoadFavorite(fav)}
-                            >
-                              <div className="favorite-header">
-                                <span className="favorite-route">{fav.routeName}</span>
-                                <button
-                                  className="favorite-remove"
-                                  onClick={(e) => {
-                                    e.stopPropagation()
-                                    removeFavorite(fav.id)
-                                    setFavorites(getFavorites())
-                                  }}
-                                >
-                                  ✕
-                                </button>
-                              </div>
-                              <div className="favorite-details">
-                                <div className="favorite-stop">📍 {fav.stopName}</div>
-                                <div className="favorite-meta">
-                                  {fav.direction === 0 ? '→ Прямое' : '← Обратное'} · {fav.dayType === 'weekday' ? 'Будни' : 'Выходные'}
+                          {favorites.filter(f => f.type === 'stop').map(fav => {
+                            const next = favNextDepartures[fav.id]
+                            return (
+                              <div
+                                key={fav.id}
+                                className="favorite-card"
+                                onClick={() => handleLoadFavorite(fav)}
+                              >
+                                <div className="favorite-header">
+                                  <span className="favorite-route">{fav.routeName}</span>
+                                  <button
+                                    className="favorite-remove"
+                                    onClick={(e) => {
+                                      e.stopPropagation()
+                                      removeFavorite(fav.id)
+                                      setFavorites(getFavorites())
+                                      setFavNextDepartures(prev => {
+                                        const updated = { ...prev }
+                                        delete updated[fav.id]
+                                        return updated
+                                      })
+                                    }}
+                                  >
+                                    ✕
+                                  </button>
+                                </div>
+                                <div className="favorite-details">
+                                  <div className="favorite-stop">📍 {fav.stopName}</div>
+                                  <div className="favorite-meta">
+                                    {fav.direction === 0 ? '→ Прямое' : '← Обратное'} · {fav.dayType === 'weekday' ? 'Будни' : 'Выходные'}
+                                  </div>
+                                  {next ? (
+                                    <div className="favorite-next-departure">
+                                      🕐 {next.time}
+                                      {next.diffMin <= 60 ? ` · через ${next.diffMin} мин` : ''}
+                                    </div>
+                                  ) : next === undefined ? (
+                                    <div className="favorite-next-loading">🕐 загружаем...</div>
+                                  ) : null}
                                 </div>
                               </div>
-                            </div>
-                          ))}
+                            )
+                          })}
                         </div>
                       </div>
                     )}
