@@ -289,30 +289,27 @@ function App() {
     const now = new Date()
     const currentMinutes = now.getHours() * 60 + now.getMinutes()
 
-    // Собираем все времена в минутах
-    const allTimes = []
-    scheduleData.forEach(hourData => {
-      hourData.times.forEach(time => {
-        const [h, m] = time.split(':').map(Number)
-        // Учитываем транспортные сутки (рейсы после полуночи)
-        const totalMin = h < 4 ? (h + 24) * 60 + m : h * 60 + m
-        allTimes.push({ time, totalMin })
-      })
+    // Нормализуем текущее время для транспортных суток
+    const normalizedNow = currentMinutes < 4 * 60
+      ? currentMinutes + 24 * 60
+      : currentMinutes
+
+    // schedule - плоский массив строк ["06:12", "06:22", ...]
+    const allTimes = scheduleData.map(time => {
+      const [h, m] = time.substring(0, 5).split(':').map(Number)
+      const totalMin = h < 4 ? (h + 24) * 60 + m : h * 60 + m
+      return { time: time.substring(0, 5), totalMin }
     })
 
-    // Текущее время тоже нормализуем
-    const normalizedNow = currentMinutes < 4 * 60 
-      ? currentMinutes + 24 * 60 
-      : currentMinutes
+    // Сортируем по времени
+    allTimes.sort((a, b) => a.totalMin - b.totalMin)
 
     // Ищем первый рейс после текущего времени
     const next = allTimes.find(t => t.totalMin > normalizedNow)
 
     if (!next) return null
 
-    // Считаем через сколько минут
     const diffMin = next.totalMin - normalizedNow
-
     return { time: next.time, diffMin }
   }
 
