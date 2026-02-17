@@ -78,24 +78,6 @@ function App() {
     setFavorites(getFavorites())
   }, [])
 
-  const loadStopsForRoute = async () => {
-    if (!selectedRoute) return
-    
-    setLoading(true)
-    try {
-      const data = await getStops(selectedRoute.route_short_name, direction)
-      setStops(data)
-      setNextDepartures({})
-      
-      // Передаём routeName явно - избегаем проблемы с замыканием
-      loadAllNextDepartures(data, selectedRoute.route_short_name, direction, dayType)
-    } catch (err) {
-      setError('Не удалось загрузить остановки')
-    } finally {
-      setLoading(false)
-    }
-  }
-
   // Загрузить ближайшие рейсы для всех остановок сразу
   const loadAllNextDepartures = async (stopsData, routeName, dir, dt) => {
     if (!routeName || !stopsData?.length) return
@@ -121,6 +103,24 @@ function App() {
       }))
     }
     console.log('✅ Загрузка ближайших рейсов завершена')
+  }
+
+  const loadStopsForRoute = async () => {
+    if (!selectedRoute) return
+    
+    setLoading(true)
+    try {
+      const data = await getStops(selectedRoute.route_short_name, direction)
+      setStops(data)
+      setNextDepartures({})
+      
+      // Передаём routeName явно - избегаем проблемы с замыканием
+      loadAllNextDepartures(data, selectedRoute.route_short_name, direction, dayType)
+    } catch (err) {
+      setError('Не удалось загрузить остановки')
+    } finally {
+      setLoading(false)
+    }
   }
 
   // Загрузить расписание для остановки (с текущими direction и dayType)
@@ -502,7 +502,7 @@ function App() {
                 loadScheduleForStop(selectedStop, direction, 'weekend')
               } else if (selectedRoute && stops.length > 0) {
                 setNextDepartures({})
-                loadAllNextDepartures(stops)
+                loadAllNextDepartures(stops, selectedRoute.route_short_name, direction, 'weekend')
               }
             }}
           >
