@@ -223,11 +223,14 @@ function App() {
     setSelectedStop(null)
     setSchedule([])
     setCacheWarning(null)
+    setNextDepartures({})
     setLoading(true)
     
     try {
       const data = await getStops(route.route_short_name, direction)
       setStops(data)
+      // Загружаем ближайшие рейсы сразу после получения остановок
+      loadAllNextDepartures(data, route.route_short_name, direction, dayType)
     } catch (err) {
       setError('Не удалось загрузить остановки')
     } finally {
