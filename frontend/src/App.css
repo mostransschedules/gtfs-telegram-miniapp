@@ -532,6 +532,19 @@
   font-size: 11px;
 }
 
+.favorite-next-departure {
+  margin-top: 5px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--tg-button);
+}
+
+.favorite-next-loading {
+  margin-top: 5px;
+  font-size: 12px;
+  color: var(--tg-hint);
+}
+
 /* ============================================================
    ПЕРЕКЛЮЧАТЕЛЬ ВИДА
    ============================================================ */
