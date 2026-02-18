@@ -903,25 +903,27 @@ function App() {
             <p className="mb-3">{getRouteDisplayName(selectedRoute)}</p>
             
             {/* Кнопка обновления */}
-            <button 
-              className="refresh-button mb-3"
-              onClick={async () => {
-                setLoading(true)
-                setNextDepartures({})
-                try {
-                  const data = await getStops(selectedRoute.route_short_name, direction)
-                  setStops(data)
-                  loadAllNextDepartures(data, selectedRoute.route_short_name, direction, dayType)
-                } catch (err) {
-                  setError('Не удалось обновить остановки')
-                } finally {
-                  setLoading(false)
-                }
-              }}
-              disabled={loading}
-            >
-              🔄 Обновить список
-            </button>
+            <div className="button-group mb-3">
+              <button 
+                className="action-button"
+                onClick={async () => {
+                  setLoading(true)
+                  setNextDepartures({})
+                  try {
+                    const data = await getStops(selectedRoute.route_short_name, direction)
+                    setStops(data)
+                    loadAllNextDepartures(data, selectedRoute.route_short_name, direction, dayType)
+                  } catch (err) {
+                    setError('Не удалось обновить остановки')
+                  } finally {
+                    setLoading(false)
+                  }
+                }}
+                disabled={loading}
+              >
+                🔄 Обновить список
+              </button>
+            </div>
             
             {Object.keys(nextDepartures).length > 0 && Object.keys(nextDepartures).length < stops.length && (
               <p className="next-departures-loading">
@@ -996,9 +998,37 @@ function App() {
         {/* Расписание */}
         {selectedStop && (
           <div className="schedule">
-            <button className="back-button mb-2" onClick={() => setSelectedStop(null)}>
-              ← Назад к остановкам
-            </button>
+            <div className="button-group mb-3">
+              <button className="action-button" onClick={() => setSelectedStop(null)}>
+                ← Назад к остановкам
+              </button>
+              <button 
+                className="action-button"
+                onClick={async () => {
+                  setLoading(true)
+                  setCacheWarning(null)
+                  try {
+                    const result = await getSchedule(
+                      selectedRoute.route_short_name,
+                      selectedStop.stop_name,
+                      direction,
+                      dayType
+                    )
+                    setSchedule(result.schedule)
+                    if (result.fromCache) {
+                      setCacheWarning(result.error || 'Показаны сохранённые данные')
+                    }
+                  } catch (err) {
+                    setError('Не удалось обновить расписание')
+                  } finally {
+                    setLoading(false)
+                  }
+                }}
+                disabled={loading}
+              >
+                🔄 Обновить
+              </button>
+            </div>
             
             <div className="schedule-header">
               <div>

@@ -136,29 +136,37 @@
   transform: translateY(0);
 }
 
-/* Кнопка обновления */
-.refresh-button {
-  width: 100%;
-  padding: 12px;
+/* Группа кнопок */
+.button-group {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+/* Универсальная кнопка действия */
+.action-button {
+  flex: 1;
+  min-width: 120px;
+  padding: 10px 16px;
   border-radius: 8px;
   background: var(--tg-secondary-bg);
   color: var(--tg-text);
   font-size: 14px;
   font-weight: 500;
-  border: 2px solid var(--tg-button);
+  border: 2px solid transparent;
   transition: all 0.2s;
 }
 
-.refresh-button:hover {
-  background: var(--tg-button);
-  color: var(--tg-button-text);
+.action-button:hover {
+  border-color: var(--tg-button);
+  background: rgba(var(--tg-button-rgb), 0.1);
 }
 
-.refresh-button:active {
+.action-button:active {
   transform: scale(0.98);
 }
 
-.refresh-button:disabled {
+.action-button:disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }
