@@ -15,6 +15,11 @@
   --app-shadow: rgba(0, 0, 0, 0.5);
 }
 
+.theme-black body {
+  background: #000000 !important;
+  color: #ffffff !important;
+}
+
 /* White Theme */
 .theme-white {
   --app-bg: #ffffff;
@@ -26,6 +31,11 @@
   --app-card-bg: #ffffff;
   --app-card-hover: #f0f0f0;
   --app-shadow: rgba(0, 0, 0, 0.1);
+}
+
+.theme-white body {
+  background: #ffffff !important;
+  color: #000000 !important;
 }
 
 /* Glass Theme */
@@ -52,48 +62,137 @@ body {
   background-attachment: fixed;
 }
 
-/* Карточки с glassmorphism */
+/* ============================================================
+   GLASS THEME - ПОЛНАЯ СТЕКЛЯННОСТЬ
+   ============================================================ */
+
+/* Все карточки */
 .theme-glass .route-card,
+.theme-glass .route-card-list,
 .theme-glass .stop-card,
 .theme-glass .favorite-card,
-.theme-glass .favorite-card-grouped {
-  background: var(--app-card-bg);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border: 1px solid var(--app-border);
-  box-shadow: 0 8px 32px var(--app-shadow);
+.theme-glass .favorite-card-grouped,
+.theme-glass .favorites-section,
+.theme-glass .search-box input,
+.theme-glass .schedule {
+  background: rgba(255, 255, 255, 0.15) !important;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
 }
 
 .theme-glass .route-card:hover,
+.theme-glass .route-card-list:hover,
 .theme-glass .stop-card:hover {
-  background: var(--app-card-hover);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  background: rgba(255, 255, 255, 0.25) !important;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  transform: translateY(-2px);
 }
 
-/* Кнопки glassmorphism */
-.theme-glass .back-button-floating,
-.theme-glass .action-button,
-.theme-glass .day-type-selector button {
-  background: rgba(255, 255, 255, 0.2);
+/* Чипсы времени расписания */
+.theme-glass .time-chip-small {
+  background: rgba(255, 255, 255, 0.2) !important;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: #ffffff !important;
+}
+
+.theme-glass .time-chip-small:hover {
+  background: rgba(255, 255, 255, 0.3) !important;
+  transform: scale(1.05);
+}
+
+/* Секции расписания по часам */
+.theme-glass .hour-group {
+  background: rgba(255, 255, 255, 0.1);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.theme-glass .hour-header {
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   color: #ffffff;
 }
 
+/* Кнопки */
+.theme-glass .back-button-floating,
+.theme-glass .action-button,
+.theme-glass .theme-button,
+.theme-glass .view-toggle-btn {
+  background: rgba(255, 255, 255, 0.2) !important;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.3) !important;
+  color: #ffffff !important;
+}
+
 .theme-glass .back-button-floating:hover,
-.theme-glass .action-button:hover {
+.theme-glass .action-button:hover,
+.theme-glass .theme-button:hover,
+.theme-glass .view-toggle-btn:hover {
+  background: rgba(255, 255, 255, 0.3) !important;
+  border-color: rgba(255, 255, 255, 0.4) !important;
+}
+
+.theme-glass .view-toggle-btn.active {
+  background: rgba(255, 255, 255, 0.4) !important;
+  border-color: rgba(255, 255, 255, 0.5) !important;
+}
+
+/* Селекторы дня и направления */
+.theme-glass .day-type-selector button,
+.theme-glass .direction-selector button {
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.theme-glass .day-type-selector button.active,
+.theme-glass .direction-selector button.active {
   background: rgba(255, 255, 255, 0.3);
   border-color: rgba(255, 255, 255, 0.4);
+  color: #ffffff;
 }
 
-.theme-glass .day-type-selector button.active {
-  background: rgba(255, 255, 255, 0.4);
-  border-color: rgba(255, 255, 255, 0.5);
+.theme-glass .day-type-selector button:hover,
+.theme-glass .direction-selector button:hover {
+  background: rgba(255, 255, 255, 0.25);
 }
 
-/* Модальное окно настроек glassmorphism */
+/* Избранное */
+.theme-glass .favorites-header {
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.theme-glass .favorites-content {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.theme-glass .favorite-route-item {
+  background: rgba(255, 255, 255, 0.15) !important;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.theme-glass .favorite-route-item:hover {
+  background: rgba(255, 255, 255, 0.25) !important;
+}
+
+/* Модальное окно настроек */
 .theme-glass .theme-modal {
   background: rgba(255, 255, 255, 0.15);
   backdrop-filter: blur(20px);
@@ -101,7 +200,43 @@ body {
   border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
-/* Универсальные стили для всех тем */
+.theme-glass .theme-option {
+  background: rgba(255, 255, 255, 0.1) !important;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 2px solid rgba(255, 255, 255, 0.2) !important;
+}
+
+.theme-glass .theme-option:hover {
+  background: rgba(255, 255, 255, 0.2) !important;
+  border-color: rgba(255, 255, 255, 0.3) !important;
+}
+
+.theme-glass .theme-option.active {
+  background: rgba(255, 255, 255, 0.25) !important;
+  border-color: rgba(255, 255, 255, 0.4) !important;
+}
+
+/* Текст */
+.theme-glass h1, 
+.theme-glass h2, 
+.theme-glass h3, 
+.theme-glass h4,
+.theme-glass p,
+.theme-glass span,
+.theme-glass div {
+  color: #ffffff;
+}
+
+.theme-glass .subtitle,
+.theme-glass .favorite-meta,
+.theme-glass .favorite-group-meta {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+/* ============================================================
+   УНИВЕРСАЛЬНЫЕ СТИЛИ ДЛЯ ВСЕХ ТЕМ
+   ============================================================ */
 .route-card,
 .stop-card,
 .favorite-card,

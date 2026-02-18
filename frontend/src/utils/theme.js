@@ -57,9 +57,12 @@ export const applyTheme = (theme) => {
     // Следуем системной теме
     const systemTheme = getSystemTheme()
     root.classList.add(systemTheme === 'dark' ? 'theme-black' : 'theme-white')
-  } else {
-    // Применяем выбранную тему
-    root.classList.add(`theme-${theme}`)
+  } else if (theme === THEMES.BLACK) {
+    root.classList.add('theme-black')
+  } else if (theme === THEMES.WHITE) {
+    root.classList.add('theme-white')
+  } else if (theme === THEMES.GLASS) {
+    root.classList.add('theme-glass')
   }
 }
 
