@@ -894,21 +894,13 @@ function App() {
         {/* Список остановок */}
         {selectedRoute && !selectedStop && (
           <div className="stops-list">
-            {/* Плавающая кнопка назад */}
-            <button className="back-button-floating" onClick={() => setSelectedRoute(null)}>
-              ← Назад к маршрутам
-            </button>
-            
-            <h2>Маршрут {selectedRoute.route_short_name}</h2>
-            <p className="mb-3">{getRouteDisplayName(selectedRoute)}</p>
-            
-            {/* Кнопки назад и обновить рядом */}
-            <div className="button-group mb-3">
-              <button className="action-button" onClick={() => setSelectedRoute(null)}>
+            {/* Плавающие кнопки */}
+            <div className="floating-buttons">
+              <button className="back-button-floating" onClick={() => setSelectedRoute(null)}>
                 ← Назад к маршрутам
               </button>
               <button 
-                className="action-button"
+                className="back-button-floating"
                 onClick={async () => {
                   setLoading(true)
                   setNextDepartures({})
@@ -927,6 +919,9 @@ function App() {
                 🔄 Обновить
               </button>
             </div>
+            
+            <h2>Маршрут {selectedRoute.route_short_name}</h2>
+            <p className="mb-3">{getRouteDisplayName(selectedRoute)}</p>
             
             {Object.keys(nextDepartures).length > 0 && Object.keys(nextDepartures).length < stops.length && (
               <p className="next-departures-loading">
