@@ -902,8 +902,11 @@ function App() {
             <h2>Маршрут {selectedRoute.route_short_name}</h2>
             <p className="mb-3">{getRouteDisplayName(selectedRoute)}</p>
             
-            {/* Кнопка обновления */}
+            {/* Кнопки назад и обновить рядом */}
             <div className="button-group mb-3">
+              <button className="action-button" onClick={() => setSelectedRoute(null)}>
+                ← Назад к маршрутам
+              </button>
               <button 
                 className="action-button"
                 onClick={async () => {
@@ -921,7 +924,7 @@ function App() {
                 }}
                 disabled={loading}
               >
-                🔄 Обновить список
+                🔄 Обновить
               </button>
             </div>
             
