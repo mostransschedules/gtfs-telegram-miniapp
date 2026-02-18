@@ -8,8 +8,11 @@ import { useState, useEffect } from 'react'
 import { initMiniApp, initBackButton } from '@telegram-apps/sdk'
 import { getRoutes, getStops, getSchedule } from './utils/api'
 import { getFavorites, addFavorite, removeFavorite, isFavorite } from './utils/favorites'
+import { getSavedTheme, saveTheme, applyTheme, watchSystemTheme, THEMES } from './utils/theme'
 import StatsTabs from './components/StatsTabs'
+import ThemeSelector from './components/ThemeSelector'
 import './App.css'
+import './themes.css'
 
 function App() {
   // =============================================================================
@@ -42,7 +45,11 @@ function App() {
     const saved = localStorage.getItem('routeViewMode')
     return saved || 'grid'
   })
-  const [favNextDepartures, setFavNextDepartures] = useState({}) // 'grid' или 'list'
+  const [favNextDepartures, setFavNextDepartures] = useState({})
+  
+  // Темы
+  const [currentTheme, setCurrentTheme] = useState(getSavedTheme())
+  const [showThemeSelector, setShowThemeSelector] = useState(false) // 'grid' или 'list'
 
   // =============================================================================
   // ИНИЦИАЛИЗАЦИЯ TELEGRAM
@@ -59,6 +66,26 @@ function App() {
       console.log('Пользователь:', tg.initDataUnsafe?.user)
     }
   }, [tg])
+
+  // Применение темы
+  useEffect(() => {
+    applyTheme(currentTheme)
+    
+    // Если выбрана системная тема - слушаем изменения
+    if (currentTheme === THEMES.SYSTEM) {
+      const cleanup = watchSystemTheme(() => {
+        applyTheme(THEMES.SYSTEM)
+      })
+      return cleanup
+    }
+  }, [currentTheme])
+
+  // Обработчик смены темы
+  const handleThemeChange = (theme) => {
+    setCurrentTheme(theme)
+    saveTheme(theme)
+    applyTheme(theme)
+  }
 
   // =============================================================================
   // ЗАГРУЗКА ДАННЫХ
@@ -511,6 +538,13 @@ function App() {
         {/* Заголовок */}
         <header className="header">
           <h1>🚌 Расписание транспорта</h1>
+          <button 
+            className="theme-button" 
+            onClick={() => setShowThemeSelector(true)}
+            title="Сменить тему"
+          >
+            🎨
+          </button>
           <p className="subtitle">Москва</p>
         </header>
 
@@ -1106,6 +1140,16 @@ function App() {
         )}
 
       </div>
+    </div>
+
+      {/* Модальное окно выбора темы */}
+      {showThemeSelector && (
+        <ThemeSelector
+          currentTheme={currentTheme}
+          onThemeChange={handleThemeChange}
+          onClose={() => setShowThemeSelector(false)}
+        />
+      )}
     </div>
   )
 }

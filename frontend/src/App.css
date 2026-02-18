@@ -12,11 +12,38 @@
   text-align: center;
   padding: 20px 0;
   margin-bottom: 20px;
+  position: relative;
 }
 
 .header h1 {
   font-size: 24px;
   margin-bottom: 4px;
+}
+
+.theme-button {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: var(--tg-secondary-bg);
+  border: 2px solid var(--tg-button);
+  border-radius: 50%;
+  width: 44px;
+  height: 44px;
+  font-size: 20px;
+  cursor: pointer;
+  transition: all 0.3s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.theme-button:hover {
+  background: var(--tg-button);
+  transform: rotate(90deg) scale(1.1);
+}
+
+.theme-button:active {
+  transform: rotate(90deg) scale(0.95);
 }
 
 .subtitle {
