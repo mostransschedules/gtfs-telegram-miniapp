@@ -1130,7 +1130,7 @@ function App() {
                   stops={stops}
                   onStopClick={handleStopSelect}
                 />
-              </>
+              </> 
             ) : (
               <div className="info">
                 ℹ️ Нет расписания для выбранных параметров
@@ -1139,17 +1139,15 @@ function App() {
           </div>
         )}
 
+        {/* Модальное окно выбора темы */}
+        {showThemeSelector && (
+          <ThemeSelector
+            currentTheme={currentTheme}
+            onThemeChange={handleThemeChange}
+            onClose={() => setShowThemeSelector(false)}
+          />
+        )}
       </div>
-    </div>
-
-      {/* Модальное окно выбора темы */}
-      {showThemeSelector && (
-        <ThemeSelector
-          currentTheme={currentTheme}
-          onThemeChange={handleThemeChange}
-          onClose={() => setShowThemeSelector(false)}
-        />
-      )}
     </div>
   )
 }
