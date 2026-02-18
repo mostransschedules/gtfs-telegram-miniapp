@@ -112,6 +112,57 @@
   font-size: 14px;
 }
 
+/* Плавающая кнопка назад */
+.back-button-floating {
+  position: sticky;
+  top: 16px;
+  z-index: 100;
+  padding: 10px 16px;
+  border-radius: 8px;
+  background: var(--tg-button);
+  color: var(--tg-button-text);
+  font-size: 14px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  margin-bottom: 16px;
+  transition: all 0.3s;
+}
+
+.back-button-floating:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.4);
+}
+
+.back-button-floating:active {
+  transform: translateY(0);
+}
+
+/* Кнопка обновления */
+.refresh-button {
+  width: 100%;
+  padding: 12px;
+  border-radius: 8px;
+  background: var(--tg-secondary-bg);
+  color: var(--tg-text);
+  font-size: 14px;
+  font-weight: 500;
+  border: 2px solid var(--tg-button);
+  transition: all 0.2s;
+}
+
+.refresh-button:hover {
+  background: var(--tg-button);
+  color: var(--tg-button-text);
+}
+
+.refresh-button:active {
+  transform: scale(0.98);
+}
+
+.refresh-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 /* Сетка маршрутов */
 .route-grid {
   display: grid;

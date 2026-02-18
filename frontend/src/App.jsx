@@ -894,12 +894,35 @@ function App() {
         {/* Список остановок */}
         {selectedRoute && !selectedStop && (
           <div className="stops-list">
-            <button className="back-button mb-2" onClick={() => setSelectedRoute(null)}>
+            {/* Плавающая кнопка назад */}
+            <button className="back-button-floating" onClick={() => setSelectedRoute(null)}>
               ← Назад к маршрутам
             </button>
             
             <h2>Маршрут {selectedRoute.route_short_name}</h2>
             <p className="mb-3">{getRouteDisplayName(selectedRoute)}</p>
+            
+            {/* Кнопка обновления */}
+            <button 
+              className="refresh-button mb-3"
+              onClick={async () => {
+                setLoading(true)
+                setNextDepartures({})
+                try {
+                  const data = await getStops(selectedRoute.route_short_name, direction)
+                  setStops(data)
+                  loadAllNextDepartures(data, selectedRoute.route_short_name, direction, dayType)
+                } catch (err) {
+                  setError('Не удалось обновить остановки')
+                } finally {
+                  setLoading(false)
+                }
+              }}
+              disabled={loading}
+            >
+              🔄 Обновить список
+            </button>
+            
             {Object.keys(nextDepartures).length > 0 && Object.keys(nextDepartures).length < stops.length && (
               <p className="next-departures-loading">
                 🕐 Загружаем время рейсов... {Object.keys(nextDepartures).length}/{stops.length}
