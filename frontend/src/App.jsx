@@ -32,8 +32,16 @@ function App() {
   const [cacheWarning, setCacheWarning] = useState(null)
   const [favorites, setFavorites] = useState([])
   const [showingFavorites, setShowingFavorites] = useState(false)
-  const [favoritesExpanded, setFavoritesExpanded] = useState(false)
-  const [routeViewMode, setRouteViewMode] = useState('grid')
+  const [favoritesExpanded, setFavoritesExpanded] = useState(() => {
+    // Загружаем из LocalStorage
+    const saved = localStorage.getItem('favoritesExpanded')
+    return saved ? JSON.parse(saved) : false
+  })
+  const [routeViewMode, setRouteViewMode] = useState(() => {
+    // Загружаем из LocalStorage
+    const saved = localStorage.getItem('routeViewMode')
+    return saved || 'grid'
+  })
   const [favNextDepartures, setFavNextDepartures] = useState({}) // 'grid' или 'list'
 
   // =============================================================================
@@ -594,6 +602,7 @@ function App() {
                 <div className="favorites-header" onClick={() => {
                   const newExpanded = !favoritesExpanded
                   setFavoritesExpanded(newExpanded)
+                  localStorage.setItem('favoritesExpanded', JSON.stringify(newExpanded))
                   // Загружаем ближайшие рейсы при первом разворачивании
                   if (newExpanded) {
                     const favStops = favorites.filter(f => f.type === 'stop')
@@ -814,14 +823,20 @@ function App() {
                 <div className="view-toggle">
                   <button
                     className={`view-toggle-btn ${routeViewMode === 'grid' ? 'active' : ''}`}
-                    onClick={() => setRouteViewMode('grid')}
+                    onClick={() => {
+                      setRouteViewMode('grid')
+                      localStorage.setItem('routeViewMode', 'grid')
+                    }}
                     title="Сетка"
                   >
                     ⊞
                   </button>
                   <button
                     className={`view-toggle-btn ${routeViewMode === 'list' ? 'active' : ''}`}
-                    onClick={() => setRouteViewMode('list')}
+                    onClick={() => {
+                      setRouteViewMode('list')
+                      localStorage.setItem('routeViewMode', 'list')
+                    }}
                     title="Список"
                   >
                     ☰
