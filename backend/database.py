@@ -223,26 +223,30 @@ def get_route_schedule(
                   AND CAST(t.direction_id AS VARCHAR) = ?
                   AND CAST(t.service_id AS VARCHAR) IN (SELECT service_id FROM valid_services)
             ),
-            stop_with_min_sequence AS (
+            stops_with_name AS (
                 SELECT 
                     st.trip_id,
                     CAST(st.stop_id AS VARCHAR) as stop_id,
                     st.stop_sequence,
-                    ROW_NUMBER() OVER (PARTITION BY st.trip_id ORDER BY st.stop_sequence) as rn
+                    st.arrival_time
                 FROM stop_times st
                 JOIN stops s ON CAST(st.stop_id AS VARCHAR) = CAST(s.stop_id AS VARCHAR)
                 WHERE st.trip_id IN (SELECT trip_id FROM route_trips)
                   AND s.stop_name = ?
             ),
-            first_stop_only AS (
-                SELECT trip_id, stop_id
-                FROM stop_with_min_sequence
-                WHERE rn = 1
+            first_occurrence AS (
+                SELECT 
+                    trip_id,
+                    MIN(stop_sequence) as min_seq
+                FROM stops_with_name
+                GROUP BY trip_id
             )
-            SELECT DISTINCT st.arrival_time
-            FROM stop_times st
-            JOIN first_stop_only fso ON st.trip_id = fso.trip_id AND CAST(st.stop_id AS VARCHAR) = fso.stop_id
-            ORDER BY st.arrival_time
+            SELECT DISTINCT swn.arrival_time
+            FROM stops_with_name swn
+            JOIN first_occurrence fo 
+                ON swn.trip_id = fo.trip_id 
+                AND swn.stop_sequence = fo.min_seq
+            ORDER BY swn.arrival_time
         """
         
         df = con.execute(query, [route_id, direction_id, stop_name]).df()
