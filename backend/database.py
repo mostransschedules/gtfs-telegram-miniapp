@@ -246,6 +246,11 @@ def get_route_schedule(
         """
         
         df = con.execute(query, [route_id, direction_id, stop_name]).df()
+        
+        # Логи для отладки
+        print(f"📊 get_route_schedule: route={route_short_name}, stop={stop_name}, direction={direction}, day_type={day_type}")
+        print(f"   → Returned {len(df)} records from query")
+        
         con.close()
         
         # Нормализуем время и сортируем
