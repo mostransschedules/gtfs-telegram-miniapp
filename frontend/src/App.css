@@ -1,1 +1,483 @@
-/* APP.CSS content from the system */
+/* APP STYLES */
+.app {
+  min-height: 100vh;
+  padding-bottom: 20px;
+}
+
+.header {
+  text-align: center;
+  padding: 20px 0;
+  margin-bottom: 20px;
+  position: relative;
+}
+
+.header h1 {
+  font-size: 24px;
+  margin-bottom: 4px;
+}
+
+.theme-button {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: var(--tg-secondary-bg);
+  border: 2px solid var(--tg-button);
+  border-radius: 50%;
+  width: 44px;
+  height: 44px;
+  font-size: 20px;
+  cursor: pointer;
+  transition: all 0.3s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.theme-button:hover {
+  background: var(--tg-button);
+  transform: rotate(90deg) scale(1.1);
+}
+
+.subtitle {
+  color: var(--tg-hint);
+  font-size: 14px;
+}
+
+/* Кнопки */
+.day-type-selector,
+.direction-selector {
+  display: flex;
+  gap: 8px;
+}
+
+.day-type-selector button,
+.direction-selector button {
+  flex: 1;
+  padding: 12px;
+  border-radius: 8px;
+  background: var(--tg-secondary-bg);
+  color: var(--tg-text);
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.day-type-selector button.active,
+.direction-selector button.active {
+  background: var(--tg-button);
+  color: var(--tg-button-text);
+}
+
+.floating-buttons {
+  position: sticky;
+  top: 16px;
+  z-index: 100;
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.back-button-floating {
+  flex: 1;
+  padding: 10px 16px;
+  border-radius: 8px;
+  background: var(--tg-button);
+  color: var(--tg-button-text);
+  font-size: 14px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  font-weight: 500;
+}
+
+.button-group {
+  display: flex;
+  gap: 8px;
+}
+
+.action-button {
+  flex: 1;
+  min-width: 120px;
+  padding: 10px 16px;
+  border-radius: 8px;
+  background: var(--tg-secondary-bg);
+  color: var(--tg-text);
+  font-size: 14px;
+  font-weight: 500;
+  border: 2px solid transparent;
+}
+
+/* Маршруты */
+.route-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.route-card {
+  background: var(--tg-secondary-bg);
+  border-radius: 12px;
+  padding: 16px;
+  cursor: pointer;
+}
+
+.route-number {
+  font-size: 24px;
+  font-weight: bold;
+  color: var(--tg-button);
+  margin-bottom: 8px;
+}
+
+.route-name {
+  font-size: 12px;
+  color: var(--tg-hint);
+}
+
+.route-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.route-card-list {
+  background: var(--tg-secondary-bg);
+  border-radius: 12px;
+  padding: 12px 16px;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  border: 2px solid transparent;
+}
+
+.route-number-list {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--tg-button);
+  min-width: 40px;
+}
+
+.route-name-list {
+  font-size: 14px;
+  color: var(--tg-text);
+  flex: 1;
+}
+
+/* Остановки */
+.stop-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--tg-secondary-bg);
+  border-radius: 12px;
+  padding: 12px;
+  margin-bottom: 8px;
+  cursor: pointer;
+}
+
+.stop-number {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--tg-button);
+  color: var(--tg-button-text);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+.stop-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.stop-name {
+  font-size: 14px;
+}
+
+.stop-next-departure {
+  font-size: 12px;
+  color: var(--tg-hint);
+  margin-top: 3px;
+}
+
+.stop-favorite-btn {
+  font-size: 20px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+}
+
+/* Расписание */
+.hour-group {
+  margin-bottom: 24px;
+}
+
+.hour-header {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--tg-button);
+  margin-bottom: 12px;
+}
+
+.hour-times {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+  gap: 8px;
+}
+
+.time-chip-small {
+  background: var(--tg-secondary-bg);
+  padding: 10px 6px;
+  border-radius: 8px;
+  text-align: center;
+  font-size: 14px;
+  font-weight: 700;
+  font-family: 'Monaco', monospace;
+}
+
+/* Избранное */
+.favorites-section {
+  margin-bottom: 16px;
+  background: var(--tg-secondary-bg);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.favorites-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  cursor: pointer;
+}
+
+.favorites-header h3 {
+  font-size: 16px;
+  margin: 0;
+  font-weight: 600;
+}
+
+.favorites-content {
+  border-top: 1px solid rgba(0,0,0,0.1);
+}
+
+.favorites-group {
+  padding: 12px;
+}
+
+.favorites-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.favorite-card {
+  background: var(--tg-bg);
+  border-radius: 8px;
+  padding: 10px;
+  cursor: pointer;
+  border: 1px solid transparent;
+}
+
+.favorite-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.favorite-route {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--tg-button);
+}
+
+.favorite-remove {
+  background: rgba(244, 67, 54, 0.1);
+  color: #f44336;
+  border: none;
+  border-radius: 50%;
+  width: 22px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.favorite-stop {
+  color: var(--tg-text);
+  font-weight: 500;
+}
+
+.favorite-meta {
+  color: var(--tg-hint);
+  font-size: 11px;
+}
+
+.favorite-next-departure {
+  margin-top: 5px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--tg-button);
+}
+
+/* Группы избранного */
+.favorite-card-grouped {
+  background: var(--tg-bg);
+  border-radius: 8px;
+  padding: 12px;
+  margin-bottom: 8px;
+  border: 1px solid rgba(0,0,0,0.1);
+}
+
+.favorite-group-header {
+  margin-bottom: 10px;
+}
+
+.favorite-group-stop {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--tg-text);
+  margin-bottom: 4px;
+}
+
+.favorite-group-meta {
+  font-size: 11px;
+  color: var(--tg-hint);
+}
+
+.favorite-group-routes {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.favorite-route-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 8px;
+  background: var(--tg-secondary-bg);
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.favorite-route-number {
+  font-weight: 700;
+  color: var(--tg-button);
+  min-width: 32px;
+}
+
+.favorite-route-time {
+  flex: 1;
+  color: var(--tg-text);
+  font-size: 13px;
+}
+
+.favorite-route-remove {
+  background: rgba(244, 67, 54, 0.1);
+  color: #f44336;
+  border: none;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 11px;
+}
+
+.favorite-route-more {
+  padding: 8px;
+  text-align: center;
+  color: var(--tg-button);
+  font-size: 13px;
+  font-weight: 500;
+  background: rgba(var(--tg-button-rgb), 0.1);
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  width: 100%;
+}
+
+/* Переключатель вида */
+.view-toggle {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+  justify-content: flex-end;
+}
+
+.view-toggle-btn {
+  background: var(--tg-secondary-bg);
+  border: 2px solid var(--tg-hint);
+  border-radius: 8px;
+  width: 40px;
+  height: 40px;
+  font-size: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--tg-hint);
+}
+
+.view-toggle-btn.active {
+  background: var(--tg-button);
+  border-color: var(--tg-button);
+  color: var(--tg-button-text);
+}
+
+/* Прочее */
+.search-box input {
+  width: 100%;
+  padding: 12px 16px;
+  border: 2px solid var(--tg-hint);
+  border-radius: 12px;
+  background: var(--tg-bg);
+  color: var(--tg-text);
+  font-size: 16px;
+}
+
+.error {
+  background: #fee;
+  border-left: 4px solid #f44;
+  color: #c00;
+  padding: 12px 16px;
+  border-radius: 8px;
+  margin-bottom: 16px;
+}
+
+.schedule-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.favorite-button {
+  background: var(--tg-secondary-bg);
+  border: 2px solid var(--tg-hint);
+  border-radius: 50%;
+  width: 48px;
+  height: 48px;
+  font-size: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.favorite-button.active {
+  background: var(--tg-button);
+  border-color: var(--tg-button);
+  color: #FFD700;
+}
