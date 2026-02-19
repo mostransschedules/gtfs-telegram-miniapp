@@ -699,15 +699,14 @@ function App() {
                           {(() => {
                             const stopFavs = favorites.filter(f => f.type === 'stop')
                             
-                            // Группируем по stopName + direction + dayType
+                            // Группируем только по stopName + direction (без dayType)
                             const grouped = {}
                             stopFavs.forEach(fav => {
-                              const key = `${fav.stopName}_${fav.direction}_${fav.dayType}`
+                              const key = `${fav.stopName}_${fav.direction}`
                               if (!grouped[key]) {
                                 grouped[key] = {
                                   stopName: fav.stopName,
                                   direction: fav.direction,
-                                  dayType: fav.dayType,
                                   routes: []
                                 }
                               }
@@ -719,7 +718,7 @@ function App() {
                               
                               if (hasMultiple) {
                                 // Группа с несколькими маршрутами — компактный вид
-                                const groupKey = `${group.stopName}_${group.direction}_${group.dayType}`
+                                const groupKey = `${group.stopName}_${group.direction}`
                                 const isExpanded = expandedFavGroups.has(groupKey)
                                 const visibleRoutes = isExpanded ? group.routes : group.routes.slice(0, 3)
                                 const hasMore = group.routes.length > 3
@@ -730,7 +729,7 @@ function App() {
                                     <div className="favorite-group-header">
                                       <div className="favorite-group-stop">{group.stopName}</div>
                                       <div className="favorite-group-meta">
-                                        {group.direction === 0 ? '→ Прямое' : '← Обратное'} · {group.dayType === 'weekday' ? 'Будни' : 'Выходные'}
+                                        {group.direction === 0 ? '→ Прямое' : '← Обратное'}
                                       </div>
                                     </div>
                                     
@@ -828,7 +827,7 @@ function App() {
                                     <div className="favorite-details">
                                       <div className="favorite-stop">📍 {fav.stopName}</div>
                                       <div className="favorite-meta">
-                                        {fav.direction === 0 ? '→ Прямое' : '← Обратное'} · {fav.dayType === 'weekday' ? 'Будни' : 'Выходные'}
+                                        {fav.direction === 0 ? '→ Прямое' : '← Обратное'}
                                       </div>
                                       {next ? (
                                         <div className="favorite-next-departure">
