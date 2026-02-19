@@ -510,6 +510,7 @@ function App() {
     }))
   }
 
+
   const handleLoadFavorite = async (fav) => {
     // Находим маршрут
     const route = routes.find(r => r.route_short_name === fav.routeName)
