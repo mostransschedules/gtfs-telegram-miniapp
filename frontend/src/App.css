@@ -112,6 +112,12 @@
   margin-top: 16px;
 }
 
+.route-description {
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid rgba(var(--tg-hint-rgb, 128, 128, 128), 0.2);
+}
+
 .route-card {
   background: var(--tg-secondary-bg);
   border-radius: 12px;

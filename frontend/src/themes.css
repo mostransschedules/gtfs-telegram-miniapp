@@ -65,13 +65,16 @@
 .theme-white h4,
 .theme-white .route-number,
 .theme-white .route-name,
+.theme-white .route-number-list,
+.theme-white .route-name-list,
 .theme-white .stop-name {
   color: #000000 !important;
 }
 
 .theme-white .subtitle,
 .theme-white .favorite-meta,
-.theme-white .stop-next-departure {
+.theme-white .stop-next-departure,
+.theme-white .route-description {
   color: #666666 !important;
 }
 
@@ -194,8 +197,14 @@
 
 /* Названия маршрутов в белой теме */
 .theme-white .route-name,
-.theme-white .route-long-name {
+.theme-white .route-long-name,
+.theme-white .route-name-list {
   color: #000000 !important;
+}
+
+.theme-white .route-number,
+.theme-white .route-number-list {
+  color: #3390ec !important;
 }
 
 /* Секции по часам в белой теме */

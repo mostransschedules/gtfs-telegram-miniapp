@@ -1010,7 +1010,7 @@ function App() {
             </div>
             
             <h2>Маршрут {selectedRoute.route_short_name}</h2>
-            <p className="mb-3">{getRouteDisplayName(selectedRoute)}</p>
+            <p className="route-description mb-4">{getRouteDisplayName(selectedRoute)}</p>
             
             {Object.keys(nextDepartures).length > 0 && Object.keys(nextDepartures).length < stops.length && (
               <p className="next-departures-loading">
