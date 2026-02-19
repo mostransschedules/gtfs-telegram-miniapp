@@ -1,0 +1,282 @@
+/* ============================================================
+   АНИМАЦИИ
+   ============================================================ */
+
+/* Плавные переходы для всех интерактивных элементов */
+button,
+.route-card,
+.route-card-list,
+.stop-card,
+.favorite-card,
+.favorite-card-grouped,
+.favorite-route-item,
+.time-chip-small,
+.view-toggle-btn,
+input {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Появление карточек с задержкой */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.route-card,
+.route-card-list,
+.stop-card,
+.favorite-card,
+.favorite-card-grouped {
+  animation: fadeInUp 0.4s ease-out;
+  animation-fill-mode: both;
+}
+
+/* Задержка для каждой карточки */
+.route-card:nth-child(1),
+.route-card-list:nth-child(1),
+.stop-card:nth-child(1) {
+  animation-delay: 0s;
+}
+
+.route-card:nth-child(2),
+.route-card-list:nth-child(2),
+.stop-card:nth-child(2) {
+  animation-delay: 0.05s;
+}
+
+.route-card:nth-child(3),
+.route-card-list:nth-child(3),
+.stop-card:nth-child(3) {
+  animation-delay: 0.1s;
+}
+
+.route-card:nth-child(4),
+.route-card-list:nth-child(4),
+.stop-card:nth-child(4) {
+  animation-delay: 0.15s;
+}
+
+.route-card:nth-child(5),
+.route-card-list:nth-child(5),
+.stop-card:nth-child(5) {
+  animation-delay: 0.2s;
+}
+
+/* Hover эффекты */
+.route-card:hover,
+.route-card-list:hover,
+.stop-card:hover,
+.favorite-card:hover,
+.favorite-card-grouped:hover {
+  transform: translateY(-4px) scale(1.02);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2);
+}
+
+.time-chip-small:hover {
+  transform: scale(1.08);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Активное состояние */
+.route-card:active,
+.stop-card:active,
+.time-chip-small:active {
+  transform: scale(0.98);
+}
+
+/* Кнопки */
+button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+button:active:not(:disabled) {
+  transform: translateY(0) scale(0.98);
+}
+
+/* Избранная звезда */
+@keyframes starPulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.3);
+  }
+}
+
+.stop-favorite-btn.active,
+.route-favorite-btn.active {
+  animation: starPulse 0.5s ease;
+}
+
+/* Spinner */
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.spinner {
+  animation: spin 1s linear infinite;
+}
+
+/* Появление модального окна */
+@keyframes modalFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes modalSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(40px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.theme-modal-overlay {
+  animation: modalFadeIn 0.3s ease;
+}
+
+.theme-modal {
+  animation: modalSlideUp 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* Раскрытие избранного */
+@keyframes expandHeight {
+  from {
+    opacity: 0;
+    max-height: 0;
+    transform: scaleY(0.8);
+  }
+  to {
+    opacity: 1;
+    max-height: 2000px;
+    transform: scaleY(1);
+  }
+}
+
+.favorites-content {
+  animation: expandHeight 0.4s ease-out;
+  transform-origin: top;
+}
+
+/* Появление маршрутов в избранном */
+.favorite-route-item {
+  animation: fadeInUp 0.3s ease-out;
+  animation-fill-mode: both;
+}
+
+.favorite-route-item:nth-child(1) { animation-delay: 0s; }
+.favorite-route-item:nth-child(2) { animation-delay: 0.05s; }
+.favorite-route-item:nth-child(3) { animation-delay: 0.1s; }
+.favorite-route-item:nth-child(4) { animation-delay: 0.15s; }
+.favorite-route-item:nth-child(5) { animation-delay: 0.2s; }
+
+/* Кнопка темы */
+.theme-button {
+  transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.theme-button:hover {
+  transform: rotate(180deg) scale(1.1);
+}
+
+/* Плавающие кнопки */
+.back-button-floating {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.floating-buttons {
+  animation: fadeInUp 0.5s ease-out;
+}
+
+/* Переключатель вида */
+.view-toggle-btn {
+  position: relative;
+  overflow: hidden;
+}
+
+.view-toggle-btn::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  transform: translate(-50%, -50%);
+  transition: width 0.6s, height 0.6s;
+}
+
+.view-toggle-btn:active::before {
+  width: 200px;
+  height: 200px;
+}
+
+/* Пульсация загрузки */
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.favorite-route-loading,
+.next-departures-loading {
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+/* Smooth scroll */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Ripple effect для кнопок */
+@keyframes ripple {
+  to {
+    transform: scale(4);
+    opacity: 0;
+  }
+}
+
+/* Появление чипсов времени */
+.time-chip-small {
+  animation: fadeInUp 0.3s ease-out;
+  animation-fill-mode: both;
+}
+
+.hour-times .time-chip-small:nth-child(1) { animation-delay: 0s; }
+.hour-times .time-chip-small:nth-child(2) { animation-delay: 0.03s; }
+.hour-times .time-chip-small:nth-child(3) { animation-delay: 0.06s; }
+.hour-times .time-chip-small:nth-child(4) { animation-delay: 0.09s; }
+.hour-times .time-chip-small:nth-child(5) { animation-delay: 0.12s; }
+.hour-times .time-chip-small:nth-child(6) { animation-delay: 0.15s; }
+.hour-times .time-chip-small:nth-child(7) { animation-delay: 0.18s; }
+.hour-times .time-chip-small:nth-child(8) { animation-delay: 0.21s; }
+
+/* Кнопка "Показать ещё" */
+.favorite-route-more {
+  transition: all 0.3s ease;
+}
+
+.favorite-route-more:hover {
+  transform: scale(1.05);
+  background: rgba(var(--tg-button-rgb), 0.15);
+}

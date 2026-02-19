@@ -13,6 +13,7 @@ import StatsTabs from './components/StatsTabs'
 import ThemeSelector from './components/ThemeSelector'
 import './App.css'
 import './themes.css'
+import './animations.css'
 
 function App() {
   // =============================================================================
@@ -49,7 +50,10 @@ function App() {
   
   // Темы
   const [currentTheme, setCurrentTheme] = useState(getSavedTheme())
-  const [showThemeSelector, setShowThemeSelector] = useState(false) // 'grid' или 'list'
+  const [showThemeSelector, setShowThemeSelector] = useState(false)
+  
+  // Раскрытые группы избранного
+  const [expandedFavGroups, setExpandedFavGroups] = useState(new Set()) // 'grid' или 'list'
 
   // =============================================================================
   // ИНИЦИАЛИЗАЦИЯ TELEGRAM
@@ -715,7 +719,9 @@ function App() {
                               
                               if (hasMultiple) {
                                 // Группа с несколькими маршрутами — компактный вид
-                                const visibleRoutes = group.routes.slice(0, 3)
+                                const groupKey = `${group.stopName}_${group.direction}_${group.dayType}`
+                                const isExpanded = expandedFavGroups.has(groupKey)
+                                const visibleRoutes = isExpanded ? group.routes : group.routes.slice(0, 3)
                                 const hasMore = group.routes.length > 3
                                 
                                 return (
@@ -764,10 +770,29 @@ function App() {
                                           </div>
                                         )
                                       })}
-                                      {hasMore && (
-                                        <div className="favorite-route-more">
+                                      {hasMore && !isExpanded && (
+                                        <button 
+                                          className="favorite-route-more"
+                                          onClick={() => {
+                                            setExpandedFavGroups(prev => new Set(prev).add(groupKey))
+                                          }}
+                                        >
                                           +{group.routes.length - 3} ещё
-                                        </div>
+                                        </button>
+                                      )}
+                                      {isExpanded && hasMore && (
+                                        <button 
+                                          className="favorite-route-more"
+                                          onClick={() => {
+                                            setExpandedFavGroups(prev => {
+                                              const next = new Set(prev)
+                                              next.delete(groupKey)
+                                              return next
+                                            })
+                                          }}
+                                        >
+                                          Скрыть
+                                        </button>
                                       )}
                                     </div>
                                   </div>
