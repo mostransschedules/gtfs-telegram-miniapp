@@ -113,9 +113,13 @@
 }
 
 .route-description {
-  margin-bottom: 24px;
+  margin-bottom: 32px !important;
   padding-bottom: 16px;
-  border-bottom: 1px solid rgba(var(--tg-hint-rgb, 128, 128, 128), 0.2);
+  border-bottom: 1px solid rgba(128, 128, 128, 0.2);
+}
+
+.mb-4 {
+  margin-bottom: 32px !important;
 }
 
 .route-card {
@@ -210,11 +214,21 @@
 }
 
 .stop-favorite-btn {
-  font-size: 20px;
+  font-size: 24px;
   background: none;
   border: none;
   cursor: pointer;
   padding: 4px;
+  color: #3390ec;
+  transition: transform 0.2s;
+}
+
+.stop-favorite-btn:hover {
+  transform: scale(1.15);
+}
+
+.stop-favorite-btn.active {
+  color: #FFD700;
 }
 
 /* Расписание */
@@ -487,3 +501,24 @@
   border-color: var(--tg-button);
   color: #FFD700;
 }
+
+/* Звёздочка в списке маршрутов */
+.route-favorite-btn {
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  padding: 4px;
+  color: #3390ec;
+  flex-shrink: 0;
+  transition: transform 0.2s;
+}
+
+.route-favorite-btn:hover {
+  transform: scale(1.15);
+}
+
+.route-favorite-btn.active {
+  color: #FFD700;
+}
+
