@@ -466,14 +466,30 @@ function App() {
   const loadFavNextDepartures = async (favStops) => {
     if (!favStops?.length) return
 
+    console.log('🔍 loadFavNextDepartures called with:', favStops)
+
     const now = new Date()
     // Определяем тип дня автоматически по текущему дню недели
     const isWeekend = now.getDay() === 0 || now.getDay() === 6
     const currentDayType = isWeekend ? 'weekend' : 'weekday'
+    
+    console.log(`📅 Current day type: ${currentDayType} (day: ${now.getDay()})`)
 
     await Promise.all(favStops.map(async (fav) => {
       // Уже загружено - пропускаем
-      if (favNextDepartures[fav.id] !== undefined) return
+      if (favNextDepartures[fav.id] !== undefined) {
+        console.log(`⏭️ Skip ${fav.id} - already loaded`)
+        return
+      }
+      
+      console.log(`🚀 Loading schedule for:`, {
+        id: fav.id,
+        route: fav.routeName,
+        stop: fav.stopName,
+        direction: fav.direction,
+        dayType: currentDayType
+      })
+      
       try {
         const result = await getSchedule(
           fav.routeName,
@@ -482,11 +498,13 @@ function App() {
           currentDayType
         )
         const next = getNextDeparture(result.schedule)
+        console.log(`✅ Got next departure for ${fav.id}:`, next)
         setFavNextDepartures(prev => ({
           ...prev,
           [fav.id]: next
         }))
       } catch (err) {
+        console.error(`❌ Failed to load ${fav.id}:`, err)
         setFavNextDepartures(prev => ({ ...prev, [fav.id]: null }))
       }
     }))
