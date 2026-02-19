@@ -115,7 +115,17 @@ function App() {
 
   // Загрузить избранное при старте
   useEffect(() => {
-    setFavorites(getFavorites())
+    const savedFavorites = getFavorites()
+    setFavorites(savedFavorites)
+    
+    // Если избранное уже развёрнуто - загружаем времена рейсов
+    if (favoritesExpanded) {
+      const favStops = savedFavorites.filter(f => f.type === 'stop')
+      if (favStops.length > 0) {
+        console.log('🔄 Favorites expanded on load - loading departure times')
+        loadFavNextDepartures(favStops)
+      }
+    }
   }, [])
 
   // Загрузить ближайшие рейсы для всех остановок сразу
@@ -657,12 +667,14 @@ function App() {
             {favorites.length > 0 && (
               <div className="favorites-section">
                 <div className="favorites-header" onClick={() => {
+                  console.log('🖱️ Favorites header clicked, current expanded:', favoritesExpanded)
                   const newExpanded = !favoritesExpanded
                   setFavoritesExpanded(newExpanded)
                   localStorage.setItem('favoritesExpanded', JSON.stringify(newExpanded))
                   // Загружаем ближайшие рейсы при первом разворачивании
                   if (newExpanded) {
                     const favStops = favorites.filter(f => f.type === 'stop')
+                    console.log('📍 Found stop favorites:', favStops.length)
                     loadFavNextDepartures(favStops)
                   }
                 }}>
