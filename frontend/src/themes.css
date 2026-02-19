@@ -141,6 +141,74 @@
   color: #999999;
 }
 
+/* Вкладки StatsTabs в белой теме */
+.theme-white .stats-tabs {
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.theme-white .stats-tab {
+  color: #666666;
+  background: transparent;
+}
+
+.theme-white .stats-tab.active {
+  color: #3390ec;
+  background: rgba(51, 144, 236, 0.1);
+}
+
+/* Контент вкладок в белой теме */
+.theme-white .stats-content,
+.theme-white .intervals-section,
+.theme-white .durations-section,
+.theme-white .statistics-section {
+  background: #ffffff;
+  color: #000000;
+}
+
+/* Карточки статистики в белой теме */
+.theme-white .stat-card,
+.theme-white .duration-card {
+  background: #3390ec !important;
+  color: #ffffff !important;
+  border: none;
+}
+
+.theme-white .stat-card h3,
+.theme-white .duration-card h3 {
+  color: #ffffff !important;
+}
+
+/* График в белой теме */
+.theme-white .chart-container {
+  background: #f5f5f5;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.theme-white .chart-hint,
+.theme-white .zoom-hint {
+  background: #ffffff;
+  color: #000000;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+/* Названия маршрутов в белой теме */
+.theme-white .route-name,
+.theme-white .route-long-name {
+  color: #000000 !important;
+}
+
+/* Секции по часам в белой теме */
+.theme-white .hour-group {
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.theme-white .hour-header {
+  background: #f5f5f5;
+  color: #000000;
+}
+
 /* Glass Theme */
 .theme-glass {
   --app-bg: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
