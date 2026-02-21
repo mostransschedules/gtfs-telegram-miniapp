@@ -41,7 +41,43 @@
   border-color: rgba(255, 255, 255, 0.2);
 }
 
-/* Вкладки статистики в тёмной теме */
+/* Карточки маршрутов и остановок в тёмной теме */
+.theme-black .route-card,
+.theme-black .route-card-list,
+.theme-black .stop-card {
+  background: #1a1a1a !important;
+  border: 1px solid rgba(255, 255, 255, 0.06) !important;
+  color: #ffffff !important;
+}
+
+.theme-black .route-card:hover,
+.theme-black .route-card-list:hover,
+.theme-black .stop-card:hover {
+  background: #222222 !important;
+}
+
+/* Избранное в тёмной теме — стрелка */
+.theme-black .expand-toggle {
+  background: transparent !important;
+  border: none !important;
+  color: #ffffff !important;
+  font-size: 16px;
+}
+
+.theme-black .favorites-header {
+  background: #1a1a1a !important;
+}
+
+.theme-black .favorite-card,
+.theme-black .favorite-card-grouped {
+  background: #111111 !important;
+  border: 1px solid rgba(255, 255, 255, 0.06) !important;
+}
+
+.theme-black .favorite-route-item {
+  background: #1a1a1a !important;
+  border: 1px solid rgba(255, 255, 255, 0.06) !important;
+}
 .theme-black .tabs-content {
   background: #1a1a1a !important;
 }
