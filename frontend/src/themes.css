@@ -191,17 +191,42 @@
   color: #000000 !important;
 }
 
-/* Карточки статистики в белой теме - синие */
-.theme-white .stat-card,
-.theme-white .duration-card {
-  background: #3390ec !important;
-  color: #ffffff !important;
-  border: none;
+/* Карточка статистики в белой теме — белый фон, тёмный текст */
+.theme-white .stats-card {
+  background: #ffffff !important;
+  color: #000000 !important;
+  border: 1px solid rgba(0, 0, 0, 0.08);
 }
 
-.theme-white .stat-card h3,
-.theme-white .duration-card h3 {
-  color: #ffffff !important;
+.theme-white .stat-label {
+  color: #666666 !important;
+}
+
+.theme-white .stat-value {
+  color: #3390ec !important;
+}
+
+.theme-white .stat-time {
+  color: #666666 !important;
+}
+
+/* Карта в белой теме */
+.theme-white .map-info {
+  background: #f0f0f0 !important;
+  color: #000000 !important;
+}
+
+.theme-white .map-info span {
+  color: #666666 !important;
+}
+
+.theme-white .map-legend {
+  background: #f0f0f0 !important;
+  color: #000000 !important;
+}
+
+.theme-white .legend-item {
+  color: #000000 !important;
 }
 
 /* График в белой теме - белый фон */

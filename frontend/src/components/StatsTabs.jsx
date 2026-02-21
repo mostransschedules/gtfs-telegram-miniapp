@@ -283,13 +283,18 @@ function StatsTabs({ route, stop, direction, dayType, schedule, stops, onStopCli
     }
   }
 
+  // Определяем цвета на основе ТЕМЫ ПРИЛОЖЕНИЯ (не Telegram системной темы)
+  const isWhiteTheme = document.documentElement.classList.contains('theme-white')
+  const textColor = isWhiteTheme ? '#000000' : '#ffffff'
+  const gridColor = isWhiteTheme ? 'rgba(0, 0, 0, 0.1)' : 'rgba(255, 255, 255, 0.1)'
+
   const chartOptions = {
     responsive: true,
     maintainAspectRatio: false,
     plugins: {
       legend: {
         labels: {
-          color: window.Telegram?.WebApp?.themeParams?.text_color || '#000000'
+          color: textColor
         }
       },
       zoom: {
@@ -300,10 +305,10 @@ function StatsTabs({ route, stop, direction, dayType, schedule, stops, onStopCli
         },
         zoom: {
           wheel: {
-            enabled: false  // Отключаем zoom колесом на десктопе
+            enabled: false
           },
           pinch: {
-            enabled: true  // Включаем pinch-to-zoom на мобильных
+            enabled: true
           },
           mode: 'x'
         },
@@ -314,24 +319,12 @@ function StatsTabs({ route, stop, direction, dayType, schedule, stops, onStopCli
     },
     scales: {
       x: {
-        ticks: { 
-          color: window.Telegram?.WebApp?.themeParams?.text_color || '#000000'
-        },
-        grid: { 
-          color: window.Telegram?.WebApp?.colorScheme === 'dark' 
-            ? 'rgba(255, 255, 255, 0.1)' 
-            : 'rgba(0, 0, 0, 0.1)' 
-        }
+        ticks: { color: textColor },
+        grid: { color: gridColor }
       },
       y: {
-        ticks: { 
-          color: window.Telegram?.WebApp?.themeParams?.text_color || '#000000'
-        },
-        grid: { 
-          color: window.Telegram?.WebApp?.colorScheme === 'dark' 
-            ? 'rgba(255, 255, 255, 0.1)' 
-            : 'rgba(0, 0, 0, 0.1)' 
-        }
+        ticks: { color: textColor },
+        grid: { color: gridColor }
       }
     }
   }
