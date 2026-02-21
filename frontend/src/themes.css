@@ -67,14 +67,17 @@
 .theme-white .route-name,
 .theme-white .route-number-list,
 .theme-white .route-name-list,
-.theme-white .stop-name {
+.theme-white .stop-name,
+.theme-white .favorite-stop,
+.theme-white .favorite-group-stop {
   color: #000000 !important;
 }
 
 .theme-white .subtitle,
 .theme-white .favorite-meta,
 .theme-white .stop-next-departure,
-.theme-white .route-description {
+.theme-white .route-description,
+.theme-white .favorite-group-meta {
   color: #666666 !important;
 }
 
@@ -160,16 +163,29 @@
   background: rgba(51, 144, 236, 0.1);
 }
 
-/* Контент вкладок в белой теме */
+/* Контент вкладок в белой теме - серый фон */
 .theme-white .stats-content,
 .theme-white .intervals-section,
 .theme-white .durations-section,
-.theme-white .statistics-section {
-  background: #ffffff;
-  color: #000000;
+.theme-white .statistics-section,
+.theme-white .map-section {
+  background: #f5f5f5 !important;
+  color: #000000 !important;
+  border-radius: 12px;
+  padding: 16px;
 }
 
-/* Карточки статистики в белой теме */
+/* Заголовки в статистике */
+.theme-white .stats-content h2,
+.theme-white .stats-content h3,
+.theme-white .intervals-section h2,
+.theme-white .durations-section h2,
+.theme-white .statistics-section h2,
+.theme-white .map-section h2 {
+  color: #000000 !important;
+}
+
+/* Карточки статистики в белой теме - синие */
 .theme-white .stat-card,
 .theme-white .duration-card {
   background: #3390ec !important;
@@ -182,10 +198,11 @@
   color: #ffffff !important;
 }
 
-/* График в белой теме */
+/* График в белой теме - белый фон */
 .theme-white .chart-container {
-  background: #f5f5f5;
+  background: #ffffff !important;
   border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 8px;
 }
 
 .theme-white .chart-hint,
