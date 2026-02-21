@@ -226,18 +226,22 @@
 .theme-white .map-info {
   background: #f0f0f0 !important;
   color: #000000 !important;
+  border: 1px solid rgba(0, 0, 0, 0.08) !important;
 }
 
-.theme-white .map-info span {
-  color: #666666 !important;
+.theme-white .map-info span,
+.theme-white .map-info * {
+  color: #444444 !important;
 }
 
 .theme-white .map-legend {
   background: #f0f0f0 !important;
   color: #000000 !important;
+  border: 1px solid rgba(0, 0, 0, 0.08) !important;
 }
 
-.theme-white .legend-item {
+.theme-white .legend-item,
+.theme-white .legend-item * {
   color: #000000 !important;
 }
 
