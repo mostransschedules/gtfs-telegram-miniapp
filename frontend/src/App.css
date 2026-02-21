@@ -159,10 +159,19 @@
   border: 2px solid transparent;
 }
 
+.route-list-content {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
 .route-number-list {
   font-size: 20px;
   font-weight: 700;
   color: var(--tg-button);
+  flex-shrink: 0;
   min-width: 40px;
 }
 
@@ -170,6 +179,9 @@
   font-size: 14px;
   color: var(--tg-text);
   flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 /* Остановки */
