@@ -20,6 +20,27 @@
   color: #ffffff !important;
 }
 
+/* Расписание по часам в тёмной теме */
+.theme-black .hour-group {
+  background: #1a1a1a !important;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.theme-black .hour-header {
+  color: #3390ec !important;
+}
+
+.theme-black .time-chip-small {
+  background: #000000 !important;
+  color: #ffffff !important;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.theme-black .time-chip-small:hover {
+  background: #1a1a1a !important;
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
 /* White Theme */
 .theme-white {
   --app-bg: #f5f5f5;
