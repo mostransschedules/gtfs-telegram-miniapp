@@ -20,7 +20,7 @@
 }
 
 .map-info span {
-  color: var(--tg-hint);
+  color: var(--tg-text);
 }
 
 /* Контейнер карты */

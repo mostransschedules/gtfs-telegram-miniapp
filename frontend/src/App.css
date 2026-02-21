@@ -138,7 +138,7 @@
 
 .route-name {
   font-size: 12px;
-  color: var(--tg-hint);
+  color: var(--tg-text);
 }
 
 .route-list {
@@ -350,7 +350,7 @@
 
 .favorite-stop {
   color: var(--tg-text);
-  font-weight: 500;
+  font-weight: 600;
 }
 
 .favorite-meta {
