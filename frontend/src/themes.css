@@ -232,13 +232,13 @@
 
 /* Секции по часам в белой теме */
 .theme-white .hour-group {
-  background: #ffffff;
+  background: #ffffff !important;
   border: 1px solid rgba(0, 0, 0, 0.08);
+  padding: 12px 16px 16px;
 }
 
 .theme-white .hour-header {
-  background: #f5f5f5;
-  color: #000000;
+  color: #3390ec;
 }
 
 /* Glass Theme */
