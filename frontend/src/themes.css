@@ -101,6 +101,18 @@
   border: none !important;
 }
 
+.theme-white .favorite-button {
+  background: #ffffff !important;
+  border: 2px solid rgba(0, 0, 0, 0.15) !important;
+  color: #3390ec !important;
+}
+
+.theme-white .favorite-button.active {
+  background: #3390ec !important;
+  border-color: #3390ec !important;
+  color: #FFD700 !important;
+}
+
 .theme-white .view-toggle-btn {
   background: #ffffff !important;
   color: #000000 !important;
