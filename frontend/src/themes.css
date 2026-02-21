@@ -64,8 +64,22 @@
   font-size: 16px;
 }
 
+.theme-black .favorites-section {
+  background: #1a1a1a !important;
+  border: 1px solid rgba(255, 255, 255, 0.06) !important;
+}
+
 .theme-black .favorites-header {
   background: #1a1a1a !important;
+}
+
+.theme-black .favorites-content {
+  background: #1a1a1a !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.06) !important;
+}
+
+.theme-black .favorites-group h4 {
+  color: #a0a0a0 !important;
 }
 
 .theme-black .favorite-card,
@@ -75,8 +89,19 @@
 }
 
 .theme-black .favorite-route-item {
-  background: #1a1a1a !important;
+  background: #111111 !important;
   border: 1px solid rgba(255, 255, 255, 0.06) !important;
+}
+
+/* Поиск в тёмной теме */
+.theme-black .search-box input {
+  background: #1a1a1a !important;
+  color: #ffffff !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+.theme-black .search-box input::placeholder {
+  color: #666666 !important;
 }
 .theme-black .tabs-content {
   background: #1a1a1a !important;
